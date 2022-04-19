@@ -1,0 +1,7 @@
+[
+{
+  "directory": "E:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/release/armeabi-v7a",
+  "command": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi28 --gcc-toolchain=C:/Users/yan/AppData/Local/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/yan/AppData/Local/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Dnative_lib_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -O3 -Oz -DNDEBUG  -fPIC   -o CMakeFiles\\native-lib.dir\\src\\main\\cpp\\postprocess.cpp.o -c E:\\APP\\tflite_yolov5_test_V1\\app\\src\\main\\cpp\\postprocess.cpp",
+  "file": "E:/APP/tflite_yolov5_test_V1/app/src/main/cpp/postprocess.cpp"
+}
+]

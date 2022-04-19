@@ -1,0 +1,8 @@
+# ninja log v5
+1	891	672055226	CMakeFiles/native-lib.dir/src/main/cpp/postprocess.cpp.o	cac864630b31b727
+893	1105	672055226	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	1a0284ce06ef98a8
+0	22	0	clean	151d3597be18985f
+4	1030	672057263	CMakeFiles/native-lib.dir/src/main/cpp/postprocess.cpp.o	cac864630b31b727
+1031	1269	672057264	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	1a0284ce06ef98a8
+4	889	672059089	CMakeFiles/native-lib.dir/src/main/cpp/postprocess.cpp.o	cac864630b31b727
+889	1146	672059089	../../../../build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	1a0284ce06ef98a8
