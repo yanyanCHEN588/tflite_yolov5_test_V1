@@ -26,6 +26,8 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
+import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -49,7 +51,7 @@ import com.example.tflite_yolov5_test_V1.customview.AutoFitTextureView;
 
 @SuppressLint("ValidFragment")
 public class CameraConnectionFragment extends Fragment {
-
+    private  static final String TAG = "cameraINFO";
     /**
      * The camera preview size will be chosen to be the smallest frame by pixel size capable of
      * containing a DESIRED_SIZE x DESIRED_SIZE square.
@@ -211,16 +213,22 @@ public class CameraConnectionFragment extends Fragment {
             }
         }
 
+        Log.i(TAG,"Desired size: " + desiredSize + ", min size: " + minSize + "x" + minSize);
+        Log.i(TAG,"Valid preview sizes: [" + TextUtils.join(", ", bigEnough) + "]");
+        Log.i(TAG,"Rejected preview sizes: [" + TextUtils.join(", ", tooSmall) + "]");
 
         if (exactSizeFound) {
+            Log.i(TAG,"Exact size match found.");
             return desiredSize;
         }
 
         // Pick the smallest of those, assuming we found any
         if (bigEnough.size() > 0) {
             final Size chosenSize = Collections.min(bigEnough, new CompareSizesByArea());
+            Log.i(TAG,"Chosen size: " + chosenSize.getWidth() + "x" + chosenSize.getHeight());
             return chosenSize;
         } else {
+            Log.e(TAG,"Couldn't find any suitable preview size");
             return choices[0];
         }
     }
@@ -409,7 +417,7 @@ public class CameraConnectionFragment extends Fragment {
             previewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             previewRequestBuilder.addTarget(surface);
 
-
+            Log.i(TAG,"Opening camera preview: " + previewSize.getWidth() + "x" + previewSize.getHeight());
             // Create the reader for the preview frames.
             previewReader =
                     ImageReader.newInstance(
