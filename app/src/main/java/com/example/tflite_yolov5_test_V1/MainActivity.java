@@ -345,7 +345,16 @@ public class MainActivity extends AppCompatActivity {
             showErrorDialog("Please stop inference task");
             return;
         }
+
+        //radio value
+            //TfliteRunner runner;
+        TfliteRunMode.Mode runmode = getRunModeFromGUI();
+        this.inputSize = getInputSizeFromGUI();
+
         Intent intent = new Intent(MainActivity.this, DetectorActivity.class);
+
+        intent.putExtra("inputSize",this.inputSize);
+        intent.putExtra("runmode",runmode);
         startActivity(intent);
     }
     @Override

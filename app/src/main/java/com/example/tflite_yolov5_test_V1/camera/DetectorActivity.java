@@ -1,5 +1,6 @@
 package com.example.tflite_yolov5_test_V1.camera;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,12 +31,13 @@ import java.util.List;
 public class DetectorActivity extends CameraActivity implements ImageReader.OnImageAvailableListener {
 
     private  static final String TAG = "cameraINFO";
-    private static final int TF_OD_API_INPUT_SIZE = 320;
+//    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
+    private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
     private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
     private static final String TF_OD_API_LABELS_FILE = "labelmap.txt";
-    //private static final TfliteRunMode.Mode MODE = TfliteRunMode.Mode.NONE_FP32;
-    private static final TfliteRunMode.Mode MODE = TfliteRunMode.Mode.NONE_INT8;
+    private  TfliteRunMode.Mode MODE = TfliteRunMode.Mode.NONE_INT8;
+//    private  static final TfliteRunMode.Mode MODE = TfliteRunMode.Mode.NONE_INT8; //ORI
     // Minimum detection confidence to track a detection.
     private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
     private static final boolean MAINTAIN_ASPECT = false;
@@ -77,6 +79,18 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //get mode from Main
+        Intent intent=getIntent();
+        int TF_OD_API_INPUT_SIZE_get=intent.getIntExtra("inputSize", 320);
+        TfliteRunMode.Mode MODE_get = (TfliteRunMode.Mode)intent.getSerializableExtra("runmode");
+        //assing value
+        TF_OD_API_INPUT_SIZE = TF_OD_API_INPUT_SIZE_get;
+        MODE=MODE_get;
+        //show TextView
+        TextView modeTextView = (TextView)findViewById(R.id.modeTextView);
+        String modeText = String.format("Size:%d Mode:%s", TF_OD_API_INPUT_SIZE,MODE.toString());
+        modeTextView.setText(modeText);
+
         SeekBar conf_seekBar = (SeekBar)findViewById(R.id.conf_seekBar2);
         conf_seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             @Override
