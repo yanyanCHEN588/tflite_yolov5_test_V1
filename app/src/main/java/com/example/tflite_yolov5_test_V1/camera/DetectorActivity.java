@@ -31,6 +31,7 @@ import java.util.List;
 public class DetectorActivity extends CameraActivity implements ImageReader.OnImageAvailableListener {
 
     private  static final String TAG = "cameraINFO";
+    private  static final String TAG2 = "testResult";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -233,7 +234,11 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         for (final TfliteRunner.Recognition result : results) {
                             final RectF location = result.getLocation();
+                            final String title = result.getTitle();
+                            final Integer class_id = result.getClass_idx();
                             //canvas.drawRect(location, paint);
+                            if (class_id == 3){ //assign id=3 "cup"
+                            Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);}
                         }
 
                         tracker.trackResults(results);
