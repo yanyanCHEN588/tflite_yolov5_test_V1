@@ -228,9 +228,29 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
                         final Canvas canvas = new Canvas(cropCopyBitmap);
                         final Paint paint = new Paint();
-                        paint.setColor(Color.RED);
+                        paint.setColor(Color.YELLOW);
                         paint.setStyle(Paint.Style.STROKE);
                         paint.setStrokeWidth(2.0f);
+                        final Paint paintBound = new Paint();
+                        paintBound.setColor(Color.GREEN);
+                        paintBound.setStyle(Paint.Style.STROKE);
+                        paintBound.setStrokeWidth(2.0f);
+
+                        //reverse
+                        float frameHeight =720;
+                        float detectorInputSize =TF_OD_API_INPUT_SIZE;
+
+                        float frameToCanvasScale = Math.min((float)canvas.getHeight() / frameHeight, (float)canvas.getWidth() / frameHeight);
+                        float scale_width = frameToCanvasScale * ((float)frameHeight / detectorInputSize);
+                        float scale_height = frameToCanvasScale * ((float)frameHeight / detectorInputSize);
+                        float x1 = (detectorInputSize *(float) (3.0/8.0))  * scale_width;
+                        float y1 = (detectorInputSize *(float) (3.0/8.0)) * scale_height;
+                        float x2 = (detectorInputSize *(float) (5.0/8.0)) * scale_width;
+                        float y2 = (detectorInputSize *(float) (5.0/8.0)) * scale_height;
+
+                        final RectF trackedPosD = new RectF(x1, y1, x2, y2);
+                        canvas.drawRect(trackedPosD, paintBound);
+
 
                         for (final TfliteRunner.Recognition result : results) {
                             final RectF location = result.getLocation();
@@ -238,8 +258,16 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             final Integer class_id = result.getClass_idx();
                             //canvas.drawRect(location, paint);
                             if (class_id == 3){ //assign id=3 "cup"
-                            Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);}
+                                canvas.drawRect(location, paint);
+                                canvas.drawPoint(location.centerX(),location.centerY(), paint);
+                            Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);
+//                                if(location.centerX()<trackedPosD.centerX()&& location.centerY()<trackedPosD.centerY()){
+                                if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
+                                    Log.d(TAG2, "in!!!!.............");
+                                }
+                            }
                         }
+
 
                         tracker.trackResults(results);
                         trackingOverlay.postInvalidate();
