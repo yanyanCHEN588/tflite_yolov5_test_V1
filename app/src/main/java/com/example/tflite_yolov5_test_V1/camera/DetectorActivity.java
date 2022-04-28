@@ -8,7 +8,9 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.media.AudioAttributes;
 import android.media.ImageReader;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -26,6 +28,7 @@ import com.example.tflite_yolov5_test_V1.customview.OverlayView;
 import com.example.tflite_yolov5_test_V1.TfliteRunner;
 import com.example.tflite_yolov5_test_V1.TfliteRunMode;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class DetectorActivity extends CameraActivity implements ImageReader.OnImageAvailableListener {
@@ -51,6 +54,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private TfliteRunner detector;
 
     private long lastProcessingTimeMs = 0;
+    private long voiceTime = 0;
     private Bitmap rgbFrameBitmap = null;
     private Bitmap croppedBitmap = null;
     private Bitmap cropCopyBitmap = null;
@@ -65,6 +69,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private MultiBoxTracker tracker;
 
     private BorderedText borderedText;
+    //for sound
+    SoundPool soundPool;
+    HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
+
 
     protected Size getDesiredPreviewFrameSize() {
         return DESIRED_PREVIEW_SIZE;
@@ -128,6 +136,26 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         });
         iou_seekBar.setMax(100);
         iou_seekBar.setProgress(45);//0.45
+
+        //設置音校屬性
+        AudioAttributes attr = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE) //設置音效使用場景
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build(); // 設置音樂類型
+        //soundPool Setting
+        soundPool = new SoundPool.Builder().setAudioAttributes(attr) // 將屬給予音效池
+                .setMaxStreams(20) // 設置最多可以容納個音效數量，我先估計20個拉
+                .build(); //
+
+        // load 方法加載至指定音樂文件，並返回所加載的音樂ID然後給hashmap Int
+        // 此處用hashmap來管理音樂文件 load 來自於raw文件
+        soundMap.put(1, soundPool.load(this, R.raw.good, 1));
+        soundMap.put(2, soundPool.load(this, R.raw.keep, 1));
+        soundMap.put(3, soundPool.load(this, R.raw.objincenter, 1));
+        soundMap.put(4, soundPool.load(this, R.raw.up, 1));
+        soundMap.put(5, soundPool.load(this, R.raw.down, 1));
+        soundMap.put(6, soundPool.load(this, R.raw.right, 1));
+        soundMap.put(7, soundPool.load(this, R.raw.left, 1));
+        soundMap.put(8, soundPool.load(this, R.raw.riser, 1));
+        soundMap.put(9, soundPool.load(this, R.raw.flat, 1));
     }
 
     @Override
@@ -264,6 +292,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 //                                if(location.centerX()<trackedPosD.centerX()&& location.centerY()<trackedPosD.centerY()){
                                 if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
                                     Log.d(TAG2, "in!!!!.............");
+                                    if(nowTime-voiceTime > 5000){ //偵測間隔時間差5s才放聲音
+                                        voiceTime = nowTime;
+                                        soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
+                                    }
                                 }
                             }
                         }
