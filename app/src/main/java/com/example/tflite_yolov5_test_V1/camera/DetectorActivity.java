@@ -1,5 +1,6 @@
 package com.example.tflite_yolov5_test_V1.camera;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,6 +14,8 @@ import android.media.ImageReader;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
@@ -73,6 +76,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     SoundPool soundPool;
     HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
 
+    //status
+    Integer in_status=0;
+
+    private void vibrate(){
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+    }
 
     protected Size getDesiredPreviewFrameSize() {
         return DESIRED_PREVIEW_SIZE;
@@ -294,8 +304,14 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     Log.d(TAG2, "in!!!!.............");
                                     if(nowTime-voiceTime > 5000){ //偵測間隔時間差5s才放聲音
                                         voiceTime = nowTime;
+                                        in_status=1;
                                         soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
                                     }
+
+                                }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
+                                    in_status=0;
+                                    vibrate();
+
                                 }
                             }
                         }
