@@ -19,6 +19,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,7 +99,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         return R.layout.tfe_od_camera_connection_fragment_tracking;
     }
 
-
+    public void OnAziButtonClick(View view){
+        vibrate();
+    }
     public float getConfThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.conf_seekBar2)).getProgress()) / 100.0f;}
     public float getIoUThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.iou_seekBar2)).getProgress()) / 100.0f;}
     @Override

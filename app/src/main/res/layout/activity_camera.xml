@@ -15,7 +15,7 @@
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="546dp"
             tools:context=".camera.CameraActivity">
 
         </FrameLayout>
@@ -64,6 +64,13 @@
             android:id="@+id/iou_seekBar2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/bt_azi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="OnAziButtonClick"
+            android:text="AZI" />
 
     </LinearLayout>
 
