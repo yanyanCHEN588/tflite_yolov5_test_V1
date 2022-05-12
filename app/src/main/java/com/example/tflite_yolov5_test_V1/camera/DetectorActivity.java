@@ -337,13 +337,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         final List<TfliteRunner.Recognition> results = detector.runInference();
 
                         cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
-                        final Canvas canvas = new Canvas(cropCopyBitmap);
+                        final Canvas canvas = new Canvas(cropCopyBitmap); //設定canvas就是把crop當畫布結果
                         final Paint paint = new Paint();
-                        paint.setColor(Color.YELLOW);
+                        paint.setColor(Color.YELLOW);//黃色畫筆
                         paint.setStyle(Paint.Style.STROKE);
                         paint.setStrokeWidth(2.0f);
                         final Paint paintBound = new Paint();
-                        paintBound.setColor(Color.GREEN);
+                        paintBound.setColor(Color.GREEN);//綠色畫筆
                         paintBound.setStyle(Paint.Style.STROKE);
                         paintBound.setStrokeWidth(2.0f);
 
@@ -360,65 +360,77 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         float y2 = (detectorInputSize *(float) (3.0/4.0)) * scale_height;
 
                         final RectF trackedPosD = new RectF(x1, y1, x2, y2);
-                        canvas.drawRect(trackedPosD, paintBound);
+                        canvas.drawRect(trackedPosD, paintBound); //由x1,y1,x2,y2畫出四個邊界框框
 
-
+                        int resultNum=0; //紀錄現在的index
+                        int targetIndex= 999; //最大面積的target
+                        float maxArea=0f;
                         for (final TfliteRunner.Recognition result : results) {
+                            //有看到指定物件　且 信心>0.2 就計算面積
+                            if(result.getClass_idx()==3 && result.getConfidence()>=0.2f){
+                                float area =result.getLocation().width()*result.getLocation().height();
+                                //最大的面積該index會記錄起來
+                                if (area > maxArea){
+                                    maxArea=area;
+                                    targetIndex=resultNum;
+                                }
+                            }
+                            resultNum++;
+                        }
+
+//                        Log.d(TAG2,String.format("targetIndex=%d",targetIndex));
+
+                        if (results.size()!=0 && targetIndex!=999){//這裡就是找到最大的唯一大面積物件index後的運算
+                            //do something
+//                            Log.d(TAG2, String.format("cls_id =%d",results.get(targetIndex).getClass_idx()));
+                            final TfliteRunner.Recognition result=results.get(targetIndex);
                             final RectF location = result.getLocation();
                             final String title = result.getTitle();
                             final Integer class_id = result.getClass_idx();
-                            //canvas.drawRect(location, paint);
-                            //有看到指定物件
-                            if (class_id == 3){ //assign id=3 "cup"
-                                canvas.drawRect(location, paint);
-                                canvas.drawPoint(location.centerX(),location.centerY(), paint);
+                            canvas.drawRect(location, paint);
+                            canvas.drawPoint(location.centerX(),location.centerY(), paint);
                             Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);
 //                                if(location.centerX()<trackedPosD.centerX()&& location.centerY()<trackedPosD.centerY()){
-                                //判斷物件是否在中心
-                                if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
-                                    Log.d(TAG2, "in!!!!.............");
-                                    if(nowTime-centerVoiceTime > 5000){ //偵測間隔時間差5s才放聲音
-                                        centerVoiceTime = nowTime;
-                                        in_status=1;
-                                        soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
-                                    }
-
-                                }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
-                                    in_status=0;
-                                    vibrate();
-
+                            //判斷物件是否在中心
+                            if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
+                                Log.d(TAG2, "in!!!!.............");
+                                if(nowTime-centerVoiceTime > 5000){ //偵測間隔時間差5s才放聲音
+                                    centerVoiceTime = nowTime;
+                                    in_status=1;
+                                    soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
                                 }
 
-                                //物件指引至中心
-                                if (nowTime-locateVoiceTime>3000) {//偵測間隔時間差3s才放聲音
-                                    locateVoiceTime = nowTime;
-                                    //物件指引至中心 已經看到指定ID的物件了 class_id == XX
-                                    dist_x = location.centerX() - trackedPosD.centerX();
-                                    dist_y = location.centerY() - trackedPosD.centerY();
-                                    if (Math.abs(dist_x) > Math.abs(dist_y)) { //絕對距離 x>y 左右移動
-                                        if (location.centerX() < trackedPosD.left) {//物件在左邊界外、要右移，但畫面是相反的，所以左移
-                                            soundPool.play(soundMap.get(7), 1, 1, 0, 0, 1f);
-                                        } else if (location.centerX() > trackedPosD.right) {//物件在右邊界外、要左移，但畫面是相反的，所以右移
-                                            soundPool.play(soundMap.get(6), 1, 1, 0, 0, 1f);
-                                        }
-                                    }
-
-                                    if (Math.abs(dist_x) < Math.abs(dist_y)) {//絕對距離 x<y  上下移動
-                                        if (location.centerY() < trackedPosD.top) {//物件在上邊界外、要下移，但畫面是相反的，所以上移
-                                            soundPool.play(soundMap.get(4), 1, 1, 0, 0, 1f);
-                                        } else if (location.centerY() > trackedPosD.bottom) {//物件在下邊界外、要上移，但畫面是相反的，所以下移
-                                            soundPool.play(soundMap.get(5), 1, 1, 0, 0, 1f);
-                                        }
-                                    }
-
-                                }
-
-
+                            }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
+                                in_status=0;
+                                vibrate();
 
                             }
+
+                            //物件指引至中心
+                            if (nowTime-locateVoiceTime>3000) {//偵測間隔時間差3s才放聲音
+                                locateVoiceTime = nowTime;
+                                //物件指引至中心 已經看到指定ID的物件了 class_id == XX
+                                dist_x = location.centerX() - trackedPosD.centerX();
+                                dist_y = location.centerY() - trackedPosD.centerY();
+                                if (Math.abs(dist_x) > Math.abs(dist_y)) { //絕對距離 x>y 左右移動
+                                    if (location.centerX() < trackedPosD.left) {//物件在左邊界外、要右移，但畫面是相反的，所以左移
+                                        soundPool.play(soundMap.get(7), 1, 1, 0, 0, 1f);
+                                    } else if (location.centerX() > trackedPosD.right) {//物件在右邊界外、要左移，但畫面是相反的，所以右移
+                                        soundPool.play(soundMap.get(6), 1, 1, 0, 0, 1f);
+                                    }
+                                }
+
+                                if (Math.abs(dist_x) < Math.abs(dist_y)) {//絕對距離 x<y  上下移動
+                                    if (location.centerY() < trackedPosD.top) {//物件在上邊界外、要下移，但畫面是相反的，所以上移
+                                        soundPool.play(soundMap.get(4), 1, 1, 0, 0, 1f);
+                                    } else if (location.centerY() > trackedPosD.bottom) {//物件在下邊界外、要上移，但畫面是相反的，所以下移
+                                        soundPool.play(soundMap.get(5), 1, 1, 0, 0, 1f);
+                                    }
+                                }
+
+                            }
+
                         }
-
-
                         tracker.trackResults(results);
                         trackingOverlay.postInvalidate();
 
