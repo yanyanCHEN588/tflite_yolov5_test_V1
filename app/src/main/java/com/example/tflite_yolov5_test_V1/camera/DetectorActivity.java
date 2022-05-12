@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.hardware.SensorManager;
 import android.media.AudioAttributes;
 import android.media.ImageReader;
 import android.media.SoundPool;
@@ -35,7 +36,14 @@ import com.example.tflite_yolov5_test_V1.TfliteRunMode;
 import java.util.HashMap;
 import java.util.List;
 
+import com.example.tflite_yolov5_test_V1.compass.Compass; //import compass
+import com.example.tflite_yolov5_test_V1.compass.SOTWFormatter;
+
 public class DetectorActivity extends CameraActivity implements ImageReader.OnImageAvailableListener {
+
+    private Compass compass;
+    private SOTWFormatter sotwFormatter;
+    float azi;
 
     private  static final String TAG = "cameraINFO";
     private  static final String TAG2 = "testResult";
@@ -74,6 +82,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private MultiBoxTracker tracker;
 
     private BorderedText borderedText;
+
+    TextView tv_magneticSTA; //for global
+
     //for sound
     SoundPool soundPool;
     HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
@@ -99,8 +110,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         return R.layout.tfe_od_camera_connection_fragment_tracking;
     }
 
-    public void OnAziButtonClick(View view){
-        vibrate();
+    public void OnClickDirection(View view){
+
+        int iAzimuth = (int)azi;
+        int index = SOTWFormatter.findClosestIndex(iAzimuth);
+        if (index == 8){index = 0;}
+        soundPool.play(soundMap.get(index+17), 1, 1, 0, 0, 1);
     }
     public float getConfThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.conf_seekBar2)).getProgress()) / 100.0f;}
     public float getIoUThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.iou_seekBar2)).getProgress()) / 100.0f;}
@@ -115,7 +130,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         TF_OD_API_INPUT_SIZE = TF_OD_API_INPUT_SIZE_get;
         MODE=MODE_get;
         //show TextView
-        TextView modeTextView = (TextView)findViewById(R.id.modeTextView);
+        TextView modeTextView = (TextView)findViewById(R.id.modeTextView); //here is local
+        tv_magneticSTA = findViewById(R.id.tv_magneticSTA); //form global
+
         String modeText = String.format("Size:%d Mode:%s", TF_OD_API_INPUT_SIZE,MODE.toString());
         modeTextView.setText(modeText);
 
@@ -156,12 +173,20 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         iou_seekBar.setMax(100);
         iou_seekBar.setProgress(45);//0.45
 
-        //設置音校屬性
+        //setting compass
+        sotwFormatter = new SOTWFormatter(this);
+        setupCompass();
+
+        /*
+        TODO:voiceControl
+        將聲音變成class的方法使用
+        設置音校屬性
+        */
         AudioAttributes attr = new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE) //設置音效使用場景
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build(); // 設置音樂類型
         //soundPool Setting
         soundPool = new SoundPool.Builder().setAudioAttributes(attr) // 將屬給予音效池
-                .setMaxStreams(20) // 設置最多可以容納個音效數量，我先估計20個拉
+                .setMaxStreams(40) // 設置最多可以容納個音效數量，我先估計40個拉
                 .build(); //
 
         // load 方法加載至指定音樂文件，並返回所加載的音樂ID然後給hashmap Int
@@ -175,6 +200,45 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(7, soundPool.load(this, R.raw.left, 1));
         soundMap.put(8, soundPool.load(this, R.raw.riser, 1));
         soundMap.put(9, soundPool.load(this, R.raw.flat, 1));
+        soundMap.put(10, soundPool.load(this, R.raw.okazi, 1));
+        soundMap.put(11, soundPool.load(this, R.raw.bigtrunright, 1));
+        soundMap.put(12, soundPool.load(this, R.raw.bigturnleft, 1));
+        soundMap.put(13, soundPool.load(this, R.raw.trunright, 1));
+        soundMap.put(14, soundPool.load(this, R.raw.turnleft, 1));
+        soundMap.put(15, soundPool.load(this, R.raw.slightlyright, 1));
+        soundMap.put(16, soundPool.load(this, R.raw.slightlyleft, 1));
+        soundMap.put(17, soundPool.load(this, R.raw.north, 1));
+        soundMap.put(18, soundPool.load(this, R.raw.eastnorth, 1));
+        soundMap.put(19, soundPool.load(this, R.raw.east, 1));
+        soundMap.put(20, soundPool.load(this, R.raw.eastsouth, 1));
+        soundMap.put(21, soundPool.load(this, R.raw.south, 1));
+        soundMap.put(22, soundPool.load(this, R.raw.westsouth, 1));
+        soundMap.put(23, soundPool.load(this, R.raw.west, 1));
+        soundMap.put(24, soundPool.load(this, R.raw.westnorth, 1));
+    }
+
+    private void setupCompass() {
+        compass = new Compass(this);
+        Compass.CompassListener cl = getCompassListener();
+        compass.setListener(cl);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        compass.start();
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("Compass", "start compass");
+        compass.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        compass.stop();
     }
 
     @Override
@@ -373,6 +437,27 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 });
                     }
                 });
+    }
+
+    private void adjustSotwLabel(float azimuth) {
+        tv_magneticSTA.setText(sotwFormatter.format(azimuth));
+    }
+    private Compass.CompassListener getCompassListener() {
+        return new Compass.CompassListener() {
+            @Override
+            public void onNewAzimuth(final float azimuth) {
+                // UI updates only in UI thread
+                // https://stackoverflow.com/q/11140285/444966
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        adjustArrow(azimuth);
+                        adjustSotwLabel(azimuth);
+                        azi=azimuth;
+                    }
+                });
+            }
+        };
     }
 
 }

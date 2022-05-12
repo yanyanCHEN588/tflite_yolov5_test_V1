@@ -4,4 +4,18 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="txt_accelerometer">加速度計</string>
+    <string name="txt_linear_accelerometer">直線加速度計</string>
+    <string name="txt_gravity">重力</string>
+    <string name="txt_magnetic">地磁</string>
+    <string name="txt_gyroscope">陀螺儀</string>
+    <string name="txt_rotation_vector">旋轉向量</string>
+    <string name="sotw_north">N</string>
+    <string name="sotw_east">E</string>
+    <string name="sotw_south">S</string>
+    <string name="sotw_west">W</string>
+    <string name="sotw_eastnorth">EN</string>
+    <string name="sotw_westnorth">WN</string>
+    <string name="sotw_eastsouth">ES</string>
+    <string name="sotw_westsouth">WS</string>
 </resources>

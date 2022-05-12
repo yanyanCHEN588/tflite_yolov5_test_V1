@@ -65,12 +65,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/bt_azi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="OnAziButtonClick"
-            android:text="AZI" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_directions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="OnClickDirection"
+                android:text="Directions"
+                android:textSize="8sp" />
+
+            <TextView
+                android:id="@+id/tv_magneticSTA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/txt_magnetic" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
