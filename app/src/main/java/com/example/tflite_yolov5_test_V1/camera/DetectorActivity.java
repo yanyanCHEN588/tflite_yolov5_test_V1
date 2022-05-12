@@ -21,6 +21,8 @@ import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,10 +45,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private Compass compass;
     private SOTWFormatter sotwFormatter;
-    float azi;
+    private float azi;
+    private float aziTarget=270f;
+    private float currentAzimuth;
+    private float rotateTheta;
+
 
     private  static final String TAG = "cameraINFO";
     private  static final String TAG2 = "testResult";
+    private  static final String TAG3 = "compass";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -64,10 +71,11 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private Integer sensorOrientation;
 
     private TfliteRunner detector;
-
+    private long nowTime=0;
     private long lastProcessingTimeMs = 0;
     private long locateVoiceTime = 0;
     private long centerVoiceTime = 0;
+    private long directionVoiceTime = 0;
     private Bitmap rgbFrameBitmap = null;
     private Bitmap croppedBitmap = null;
     private Bitmap cropCopyBitmap = null;
@@ -117,6 +125,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         if (index == 8){index = 0;}
         soundPool.play(soundMap.get(index+17), 1, 1, 0, 0, 1);
     }
+
+
     public float getConfThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.conf_seekBar2)).getProgress()) / 100.0f;}
     public float getIoUThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.iou_seekBar2)).getProgress()) / 100.0f;}
     @Override
@@ -327,7 +337,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 new Runnable() {
                     @Override
                     public void run() {
-                        final long nowTime = SystemClock.uptimeMillis();
+                        nowTime = SystemClock.uptimeMillis();
                         float fps = (float)1000 / (float)(nowTime - lastProcessingTimeMs);
                         lastProcessingTimeMs = nowTime;
 
@@ -379,9 +389,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         }
 
 //                        Log.d(TAG2,String.format("targetIndex=%d",targetIndex));
+                        //這裡就是找到最大的唯一大面積物件index後的運算
+                        if (results.size()!=0 && targetIndex!=999){
 
-                        if (results.size()!=0 && targetIndex!=999){//這裡就是找到最大的唯一大面積物件index後的運算
-                            //do something
 //                            Log.d(TAG2, String.format("cls_id =%d",results.get(targetIndex).getClass_idx()));
                             final TfliteRunner.Recognition result=results.get(targetIndex);
                             final RectF location = result.getLocation();
@@ -394,8 +404,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             //判斷物件是否在中心
                             if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
                                 Log.d(TAG2, "in!!!!.............");
-                                if(nowTime-centerVoiceTime > 5000){ //偵測間隔時間差5s才放聲音
-                                    centerVoiceTime = nowTime;
+                                if(in_status==0){
+                                    //進去中心只會撥放一次聲音了，但是會因為物間在中心邊界造成震盪，而標註框閃爍時會有重疊音
                                     in_status=1;
                                     soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
                                 }
@@ -451,6 +461,51 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 });
     }
 
+
+    private void adjustDirection(float azimuth) {
+        int rotateStatus=0;
+//        if(azimuth>180){azimuth=azimuth-360f;}
+//        if(aziTarget>180){aziTarget=aziTarget-360f;}
+        rotateTheta = azimuth - aziTarget;
+        Log.d(TAG3, String.format("rotateTheta = %f",rotateTheta));
+        if (Math.abs(rotateTheta)>90){
+            if(rotateTheta>0){
+                Log.d(TAG3, "大大向左轉校正 ");
+                rotateStatus=2;
+            }
+            if(rotateTheta<0){
+                Log.d(TAG3, "大大向右轉校正");
+                rotateStatus=1;
+            }
+        }
+        if(rotateTheta>45f && rotateTheta<=90f){
+            Log.d(TAG3, "向左轉");
+            rotateStatus=4;
+        }
+        if(rotateTheta>23.5f && rotateTheta<=45f){
+            Log.d(TAG3, "稍微向左轉");
+            rotateStatus=6;
+        }
+        if(rotateTheta<-45f && rotateTheta>=-90f){
+            Log.d(TAG3, "向右轉");
+            rotateStatus=3;
+        }
+        if(rotateTheta<-23.5f && rotateTheta>=-45f){
+            Log.d(TAG3, "稍微向右轉");
+            rotateStatus=5;
+        }
+        if (Math.abs(rotateTheta)<23.5f){
+            Log.d(TAG3, "okAZI");
+            rotateStatus=0;
+        }
+        //物件指引至中心
+        if (nowTime-directionVoiceTime>4000) {//偵測間隔時間差3s才放聲音
+            directionVoiceTime = nowTime;
+            soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);
+            }
+
+
+    }
     private void adjustSotwLabel(float azimuth) {
         tv_magneticSTA.setText(sotwFormatter.format(azimuth));
     }
@@ -464,6 +519,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     @Override
                     public void run() {
 //                        adjustArrow(azimuth);
+                        adjustDirection(azimuth);
                         adjustSotwLabel(azimuth);
                         azi=azimuth;
                     }
