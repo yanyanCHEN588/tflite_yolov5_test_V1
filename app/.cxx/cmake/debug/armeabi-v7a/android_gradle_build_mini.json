@@ -1,32 +1,32 @@
 {
   "buildFiles": [
-    "E:\\APP\\tflite_yolov5_test_V1\\app\\CMakeLists.txt"
+    "D:\\APP\\tflite_yolov5_test_V1\\app\\CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
     [
-      "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+      "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
       "-C",
-      "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+      "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
-    "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+    "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
     "-C",
-    "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+    "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
     "{LIST_OF_TARGETS_TO_BUILD}"
   ],
   "libraries": {
     "native-lib-Debug-armeabi-v7a": {
       "artifactName": "native-lib",
       "buildCommandComponents": [
-        "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+        "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
         "-C",
-        "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+        "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
         "native-lib"
       ],
       "abi": "armeabi-v7a",
-      "output": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libnative-lib.so",
+      "output": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libnative-lib.so",
       "runtimeFiles": []
     }
   }

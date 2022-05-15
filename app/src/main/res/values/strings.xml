@@ -18,4 +18,26 @@
     <string name="sotw_westnorth">WN</string>
     <string name="sotw_eastsouth">ES</string>
     <string name="sotw_westsouth">WS</string>
+
+    <!--給spinner Select 1 -->
+    <string-array name="SelectItem">
+        <item>None</item>
+        <item>雨傘</item>
+        <item>包</item>
+        <item>瓶子</item>
+        <item>杯子</item>
+        <item>叉子</item>
+        <item>湯匙</item>
+        <item>碗</item>
+        <item>椅子</item>
+        <item>遙控器</item>
+        <item>手機</item>
+        <item>微波爐</item>
+        <item>冰箱</item>
+        <item>延長線</item>
+        <item>螢幕</item>
+        <item>滑鼠</item>
+        <item>鍵盤</item>
+        <item>冷氣</item>
+    </string-array>
 </resources>

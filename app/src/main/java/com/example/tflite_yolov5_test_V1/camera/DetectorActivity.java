@@ -23,7 +23,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.AdapterView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,7 +93,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private BorderedText borderedText;
 
-    TextView tv_magneticSTA; //for global
+    TextView tv_magneticSTA,tv_spinner; //for global
+
+    Spinner spinnerItem;
 
     //for sound
     SoundPool soundPool;
@@ -142,6 +146,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         //show TextView
         TextView modeTextView = (TextView)findViewById(R.id.modeTextView); //here is local
         tv_magneticSTA = findViewById(R.id.tv_magneticSTA); //form global
+        tv_spinner = findViewById(R.id.tv_item);
 
         String modeText = String.format("Size:%d Mode:%s", TF_OD_API_INPUT_SIZE,MODE.toString());
         modeTextView.setText(modeText);
@@ -186,6 +191,26 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         //setting compass
         sotwFormatter = new SOTWFormatter(this);
         setupCompass();
+
+        //選單init
+        spinnerItem = findViewById(R.id.spinnerItem);
+
+        spinnerItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            //如果馬上選擇選單我要做什麼
+                String[] SelectItem=getResources().getStringArray(R.array.SelectItem);
+                int indexSP = spinnerItem.getSelectedItemPosition(); //被選取項目的位置
+                tv_spinner.setText(SelectItem[indexSP]);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            //沒有被選擇我什麼也不做:))
+            }
+        });
+
 
         /*
         TODO:voiceControl

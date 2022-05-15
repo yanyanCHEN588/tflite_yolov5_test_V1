@@ -1,3 +1,3 @@
-E:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/native-lib.dir
-E:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
-E:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+D:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/native-lib.dir
+D:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/APP/tflite_yolov5_test_V1/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir
