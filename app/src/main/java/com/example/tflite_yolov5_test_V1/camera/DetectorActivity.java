@@ -93,21 +93,21 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private BorderedText borderedText;
 
-    TextView tv_magneticSTA,tv_spinner; //for global
+    private TextView tv_magneticSTA,tv_spinner; //for global
 
-    Spinner spinnerItem;
+    private Spinner spinnerItem;
+    private int targetItem;
 
     //for sound
-    SoundPool soundPool;
-    HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
+    private SoundPool soundPool;
+    private HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
 
     //status
-    Integer in_status=0;
-
+    private Integer in_status=0;
     //物件指引至中心
-    Float dist_x=0f;
-    Float dist_y=0f;
-    Integer voice_num=0;
+    private Float dist_x=0f;
+    private Float dist_y=0f;
+    private Integer voice_num=0;
 
     private void vibrate(){
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -202,11 +202,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 String[] SelectItem=getResources().getStringArray(R.array.SelectItem);
                 int indexSP = spinnerItem.getSelectedItemPosition(); //被選取項目的位置
                 tv_spinner.setText(SelectItem[indexSP]);
+                targetItem = (indexSP==0) ? 999:indexSP-1; //如果indexSP==0(None)就給999
 
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                targetItem=999;
             //沒有被選擇我什麼也不做:))
             }
         });
@@ -401,13 +403,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         int targetIndex= 999; //最大面積的target
                         float maxArea=0f;
                         for (final TfliteRunner.Recognition result : results) {
-                            //有看到指定物件　且 信心>0.2 就計算面積
-                            if(result.getClass_idx()==3 && result.getConfidence()>=0.2f){
-                                float area =result.getLocation().width()*result.getLocation().height();
-                                //最大的面積該index會記錄起來
-                                if (area > maxArea){
-                                    maxArea=area;
-                                    targetIndex=resultNum;
+                            if (targetItem!=999) {//有被清單選擇到
+                                //有看到指定物件　且 信心>0.2 就計算面積
+                                if (result.getClass_idx() == targetItem && result.getConfidence() >= 0.2f) {
+                                    float area = result.getLocation().width() * result.getLocation().height();
+                                    //最大的面積該index會記錄起來
+                                    if (area > maxArea) {
+                                        maxArea = area;
+                                        targetIndex = resultNum;
+                                    }
                                 }
                             }
                             resultNum++;
