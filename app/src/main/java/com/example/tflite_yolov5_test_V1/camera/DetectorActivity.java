@@ -46,7 +46,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private Compass compass;
     private SOTWFormatter sotwFormatter;
     private float azi;
-    private float aziTarget=270f;
+    private float aziTarget=90f;
     private float currentAzimuth;
     private float rotateTheta;
 
@@ -469,14 +469,31 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         rotateTheta = azimuth - aziTarget;
         Log.d(TAG3, String.format("rotateTheta = %f",rotateTheta));
         if (Math.abs(rotateTheta)>90){
-            if(rotateTheta>0){
-                Log.d(TAG3, "大大向左轉校正 ");
-                rotateStatus=2;
+            if(azimuth >aziTarget){
+//                rotateStatus = (rotateTheta<180f) ? 2 :1 ; //1是大大向右轉,2是大大向左轉
+                if (rotateTheta<180f){
+                    Log.d(TAG3, "大大向左轉校正");
+                    rotateStatus=2;
+                }
+                else {
+                    Log.d(TAG3, "大大向右轉校正 ");
+                    rotateStatus=1;
+                }
+
             }
-            if(rotateTheta<0){
-                Log.d(TAG3, "大大向右轉校正");
-                rotateStatus=1;
+            if(aziTarget>azimuth){
+//                rotateStatus = (aziTarget-azimuth<180f) ? 1 :2 ; //1是大大向右轉,2是大大向左轉
+                if (aziTarget-azimuth<180f){
+                    Log.d(TAG3, "大大向右轉校正");
+                    rotateStatus=1;
+                }
+                else {
+                    Log.d(TAG3, "大大向左轉校正 ");
+                    rotateStatus=2;
+                }
+
             }
+
         }
         if(rotateTheta>45f && rotateTheta<=90f){
             Log.d(TAG3, "向左轉");
