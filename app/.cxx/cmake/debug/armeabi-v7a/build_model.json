@@ -6,12 +6,12 @@
     "deprecated": false,
     "default": true
   },
-  "originalCxxBuildFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
-  "cxxBuildFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+  "originalCxxBuildFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+  "cxxBuildFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
   "abiPlatformVersion": 28,
   "cmake": {
-    "cmakeWrappingBaseFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cxx\\debug\\armeabi-v7a",
-    "cmakeArtifactsBaseFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+    "cmakeWrappingBaseFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cxx\\debug\\armeabi-v7a",
+    "cmakeArtifactsBaseFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
     "effectiveConfiguration": {
       "name": "traditional-android-studio-cmake-environment",
       "description": "Composite reified CMakeSettings configuration",
@@ -19,9 +19,9 @@
       "inheritEnvironments": [
         "ndk"
       ],
-      "buildRoot": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
-      "cmakeToolchain": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
-      "cmakeExecutable": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\cmake.exe",
+      "buildRoot": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+      "cmakeToolchain": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
+      "cmakeExecutable": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\cmake.exe",
       "variables": [
         {
           "name": "CMAKE_CXX_FLAGS",
@@ -29,7 +29,7 @@
         },
         {
           "name": "CMAKE_FIND_ROOT_PATH",
-          "value": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab\\armeabi-v7a\\prefab"
+          "value": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab\\armeabi-v7a\\prefab"
         },
         {
           "name": "CMAKE_BUILD_TYPE",
@@ -37,7 +37,7 @@
         },
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake"
+          "value": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake"
         },
         {
           "name": "ANDROID_ABI",
@@ -45,7 +45,7 @@
         },
         {
           "name": "ANDROID_NDK",
-          "value": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529"
+          "value": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529"
         },
         {
           "name": "ANDROID_PLATFORM",
@@ -57,7 +57,7 @@
         },
         {
           "name": "CMAKE_ANDROID_NDK",
-          "value": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529"
+          "value": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529"
         },
         {
           "name": "CMAKE_EXPORT_COMPILE_COMMANDS",
@@ -65,15 +65,15 @@
         },
         {
           "name": "CMAKE_LIBRARY_OUTPUT_DIRECTORY",
-          "value": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a"
+          "value": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a"
         },
         {
           "name": "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
-          "value": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a"
+          "value": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj\\armeabi-v7a"
         },
         {
           "name": "CMAKE_MAKE_PROGRAM",
-          "value": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe"
+          "value": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe"
         },
         {
           "name": "CMAKE_SYSTEM_NAME",
@@ -85,7 +85,7 @@
         }
       ]
     },
-    "cmakeServerLogFile": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\cmake_server_log.txt"
+    "cmakeServerLogFile": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\cmake_server_log.txt"
   },
   "variant": {
     "buildSystemArgumentList": [],
@@ -94,8 +94,8 @@
       "-O3"
     ],
     "variantName": "debug",
-    "objFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj",
-    "soFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\lib",
+    "objFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\obj",
+    "soFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates\\cmake\\debug\\lib",
     "isDebuggableEnabled": true,
     "validAbiList": [
       "ARMEABI_V7A",
@@ -105,15 +105,15 @@
     "implicitBuildTargetSet": [],
     "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
     "module": {
-      "cxxFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx",
+      "cxxFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx",
       "splitsAbiFilterSet": [],
-      "intermediatesFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates",
+      "intermediatesFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\build\\intermediates",
       "gradleModulePathName": ":app",
-      "moduleRootFolder": "D:\\APP\\tflite_yolov5_test_V1\\app",
-      "moduleBuildFile": "D:\\APP\\tflite_yolov5_test_V1\\app\\build.gradle",
-      "makeFile": "D:\\APP\\tflite_yolov5_test_V1\\app\\CMakeLists.txt",
+      "moduleRootFolder": "E:\\APP\\tflite_yolov5_test_V1\\app",
+      "moduleBuildFile": "E:\\APP\\tflite_yolov5_test_V1\\app\\build.gradle",
+      "makeFile": "E:\\APP\\tflite_yolov5_test_V1\\app\\CMakeLists.txt",
       "buildSystem": "CMAKE",
-      "ndkFolder": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529",
+      "ndkFolder": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529",
       "ndkVersion": "21.4.7075529",
       "ndkSupportedAbiList": [
         "ARMEABI_V7A",
@@ -176,31 +176,31 @@
           "default": true
         }
       ],
-      "originalCmakeToolchainFile": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
-      "cmakeToolchainFile": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
+      "originalCmakeToolchainFile": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
+      "cmakeToolchainFile": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
       "cmake": {
         "isValidCmakeAvailable": true,
-        "cmakeExe": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\cmake.exe",
+        "cmakeExe": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\cmake.exe",
         "minimumCmakeVersion": "3.10.2",
-        "ninjaExe": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+        "ninjaExe": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
         "isPreferCmakeFileApiEnabled": true
       },
       "stlSharedObjectMap": {
         "LIBCXX_SHARED": {
-          "ARMEABI_V7A": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\arm-linux-androideabi\\libc++_shared.so",
-          "ARM64_V8A": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\aarch64-linux-android\\libc++_shared.so",
-          "X86": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\i686-linux-android\\libc++_shared.so",
-          "X86_64": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\x86_64-linux-android\\libc++_shared.so"
+          "ARMEABI_V7A": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\arm-linux-androideabi\\libc++_shared.so",
+          "ARM64_V8A": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\aarch64-linux-android\\libc++_shared.so",
+          "X86": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\i686-linux-android\\libc++_shared.so",
+          "X86_64": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\x86_64-linux-android\\libc++_shared.so"
         },
         "LIBCXX_STATIC": {},
         "NONE": {},
         "SYSTEM": {}
       },
       "project": {
-        "rootBuildGradleFolder": "D:\\APP\\tflite_yolov5_test_V1",
-        "cxxFolder": "D:\\APP\\tflite_yolov5_test_V1\\.cxx",
-        "compilerSettingsCacheFolder": "D:\\APP\\tflite_yolov5_test_V1\\.cxx",
-        "sdkFolder": "C:\\Users\\user-pc\\AppData\\Local\\Android\\Sdk",
+        "rootBuildGradleFolder": "E:\\APP\\tflite_yolov5_test_V1",
+        "cxxFolder": "E:\\APP\\tflite_yolov5_test_V1\\.cxx",
+        "compilerSettingsCacheFolder": "E:\\APP\\tflite_yolov5_test_V1\\.cxx",
+        "sdkFolder": "C:\\Users\\yan\\AppData\\Local\\Android\\Sdk",
         "isNativeCompilerSettingsCacheEnabled": false,
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
@@ -209,10 +209,10 @@
       },
       "nativeBuildOutputLevel": "QUIET"
     },
-    "prefabDirectory": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab"
+    "prefabDirectory": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab"
   },
   "buildSettings": {
     "environmentVariables": []
   },
-  "prefabFolder": "D:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab\\armeabi-v7a"
+  "prefabFolder": "E:\\APP\\tflite_yolov5_test_V1\\app\\.cxx\\cmake\\debug\\prefab\\armeabi-v7a"
 }

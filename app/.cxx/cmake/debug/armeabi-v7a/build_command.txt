@@ -1,22 +1,22 @@
-                    Executable : C:\Users\user-pc\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\cmake.exe
+                    Executable : C:\Users\yan\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\cmake.exe
 arguments : 
--HD:\APP\tflite_yolov5_test_V1\app
+-HE:\APP\tflite_yolov5_test_V1\app
 -DCMAKE_CXX_FLAGS=-O3
--DCMAKE_FIND_ROOT_PATH=D:\APP\tflite_yolov5_test_V1\app\.cxx\cmake\debug\prefab\armeabi-v7a\prefab
+-DCMAKE_FIND_ROOT_PATH=E:\APP\tflite_yolov5_test_V1\app\.cxx\cmake\debug\prefab\armeabi-v7a\prefab
 -DCMAKE_BUILD_TYPE=Debug
--DCMAKE_TOOLCHAIN_FILE=C:\Users\user-pc\AppData\Local\Android\Sdk\ndk\21.4.7075529\build\cmake\android.toolchain.cmake
+-DCMAKE_TOOLCHAIN_FILE=C:\Users\yan\AppData\Local\Android\Sdk\ndk\21.4.7075529\build\cmake\android.toolchain.cmake
 -DANDROID_ABI=armeabi-v7a
--DANDROID_NDK=C:\Users\user-pc\AppData\Local\Android\Sdk\ndk\21.4.7075529
+-DANDROID_NDK=C:\Users\yan\AppData\Local\Android\Sdk\ndk\21.4.7075529
 -DANDROID_PLATFORM=android-28
 -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a
--DCMAKE_ANDROID_NDK=C:\Users\user-pc\AppData\Local\Android\Sdk\ndk\21.4.7075529
+-DCMAKE_ANDROID_NDK=C:\Users\yan\AppData\Local\Android\Sdk\ndk\21.4.7075529
 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
--DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\APP\tflite_yolov5_test_V1\app\build\intermediates\cmake\debug\obj\armeabi-v7a
--DCMAKE_RUNTIME_OUTPUT_DIRECTORY=D:\APP\tflite_yolov5_test_V1\app\build\intermediates\cmake\debug\obj\armeabi-v7a
--DCMAKE_MAKE_PROGRAM=C:\Users\user-pc\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=E:\APP\tflite_yolov5_test_V1\app\build\intermediates\cmake\debug\obj\armeabi-v7a
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=E:\APP\tflite_yolov5_test_V1\app\build\intermediates\cmake\debug\obj\armeabi-v7a
+-DCMAKE_MAKE_PROGRAM=C:\Users\yan\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
 -DCMAKE_SYSTEM_NAME=Android
 -DCMAKE_SYSTEM_VERSION=28
--BD:\APP\tflite_yolov5_test_V1\app\.cxx\cmake\debug\armeabi-v7a
+-BE:\APP\tflite_yolov5_test_V1\app\.cxx\cmake\debug\armeabi-v7a
 -GNinja
 jvmArgs : 
 
