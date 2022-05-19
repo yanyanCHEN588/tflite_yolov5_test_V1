@@ -1,7 +1,0 @@
-Executable : C:\Users\yan\AppData\Local\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
-arguments : 
--C
-E:\APP\tflite_yolov5_test_V1\app\.cxx\cmake\debug\armeabi-v7a
-native-lib
-jvmArgs : 
-

@@ -48,7 +48,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private Compass compass;
     private SOTWFormatter sotwFormatter;
     private float azi;
-    private float aziTarget=90f;
+    private float aziTarget=999f;
     private float currentAzimuth;
     private float rotateTheta;
 
@@ -252,6 +252,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(22, soundPool.load(this, R.raw.westsouth, 1));
         soundMap.put(23, soundPool.load(this, R.raw.west, 1));
         soundMap.put(24, soundPool.load(this, R.raw.westnorth, 1));
+        soundMap.put(25, soundPool.load(this, R.raw.angel, 1));
     }
 
     private void setupCompass() {
@@ -402,6 +403,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         int resultNum=0; //紀錄現在的index
                         int targetIndex= 999; //最大面積的target
                         float maxArea=0f;
+                        float thArea = (float) (0.8) * detectorInputSize * scale_width * detectorInputSize* scale_height ; //目標物在畫面超過多少面積比例的標準
                         for (final TfliteRunner.Recognition result : results) {
                             if (targetItem!=999) {//有被清單選擇到
                                 //有看到指定物件　且 信心>0.2 就計算面積
@@ -437,6 +439,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     //進去中心只會撥放一次聲音了，但是會因為物間在中心邊界造成震盪，而標註框閃爍時會有重疊音
                                     in_status=1;
                                     soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
+                                }
+                                if(result.getLocation().width() * result.getLocation().height() >thArea ){
+                                    Log.d(TAG2, "area OK!~~~~~~");
+                                    soundPool.play(soundMap.get(25), 1, 1, 0, 0, 1f);
                                 }
 
                             }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
@@ -565,7 +571,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     @Override
                     public void run() {
 //                        adjustArrow(azimuth);
-                        adjustDirection(azimuth);
+                        if(aziTarget != 999f){adjustDirection(azimuth);}
                         adjustSotwLabel(azimuth);
                         azi=azimuth;
                     }
