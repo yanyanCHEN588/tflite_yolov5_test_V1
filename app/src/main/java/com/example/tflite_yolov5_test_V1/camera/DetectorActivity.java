@@ -37,6 +37,7 @@ import com.example.tflite_yolov5_test_V1.customview.OverlayView;
 import com.example.tflite_yolov5_test_V1.TfliteRunner;
 import com.example.tflite_yolov5_test_V1.TfliteRunMode;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private float aziItem=999f;
     private float currentAzimuth;
     private float rotateTheta;
+    private float thAreaRatio=0.8f;
 
 
     private  static final String TAG = "cameraINFO";
@@ -203,6 +205,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         sotwFormatter = new SOTWFormatter(this);
         setupCompass();
 
+        Integer[] bigArr = new Integer[] {7,11};
+        List<Integer> bigList = Arrays.asList(bigArr);
+        Integer[] midArr = new Integer[] { 0,1,10,13,15,16 };
+        List<Integer> midList = Arrays.asList(midArr);
+        Integer[] smlArr = new Integer[] {2,3,4,5,6,8,9,12,14};
+        List<Integer> smlList = Arrays.asList(smlArr);
+
         //選單init
         spinnerItem = findViewById(R.id.spinnerItem);
 
@@ -226,6 +235,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     Log.d(TAG4, String.format("changeItem!"));
                 }
                 targetItem = (indexSP==0) ? 999:indexSP-1; //如果indexSP==0(None)就給999
+
+                if(bigList.indexOf(targetItem) != -1){
+                    thAreaRatio=0.8f;
+                }else if(midList.indexOf(targetItem) != -1){
+                    thAreaRatio=0.5f;
+                }else {
+                    thAreaRatio=0.3f;
+                }
+                Log.d(TAG4, String.format("thAreaRatio=%f",thAreaRatio));
 
             }
 
@@ -426,7 +444,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         int resultNum=0; //紀錄現在的index
                         int targetIndex= 999; //最大面積的target
                         float maxArea=0f;
-                        float thArea = (float) (0.8) * detectorInputSize * scale_width * detectorInputSize* scale_height ; //目標物在畫面超過多少面積比例的標準
+                        float thArea = thAreaRatio * detectorInputSize * scale_width * detectorInputSize* scale_height ; //目標物在畫面超過多少面積比例的標準
                         for (final TfliteRunner.Recognition result : results) {
                             if (targetItem!=999) {//有被清單選擇到
                                 //有看到指定物件　且 信心>0.2 就計算面積
@@ -452,6 +470,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         }
 
                         if(nowTime-recordAreaTime>10000 && targetItem!=999){//如果record時間差大於10秒 且非NONEitem
+                            recordAreaTime=nowTime;
                             aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                             Log.d(TAG4, String.format("10 sec for setting aziTarget"));
 
