@@ -49,6 +49,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private SOTWFormatter sotwFormatter;
     private float azi;
     private float aziTarget=999f;
+    private float aziItem=999f;
     private float currentAzimuth;
     private float rotateTheta;
 
@@ -56,6 +57,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private  static final String TAG = "cameraINFO";
     private  static final String TAG2 = "testResult";
     private  static final String TAG3 = "compass";
+    private  static final String TAG4 = "testGudance";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -77,6 +79,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private long lastProcessingTimeMs = 0;
     private long locateVoiceTime = 0;
     private long centerVoiceTime = 0;
+    private long recordAreaTime  = 0;
     private long directionVoiceTime = 0;
     private Bitmap rgbFrameBitmap = null;
     private Bitmap croppedBitmap = null;
@@ -96,7 +99,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private TextView tv_magneticSTA,tv_spinner; //for global
 
     private Spinner spinnerItem;
-    private int targetItem;
+    private int targetItem=999;
+    private int previousItem=999;
 
     //for sound
     private SoundPool soundPool;
@@ -104,10 +108,17 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     //status
     private Integer in_status=0;
+    private Integer gudanceDirection=0;
+    private Integer gudanceCenter=0;
     //物件指引至中心
     private Float dist_x=0f;
     private Float dist_y=0f;
     private Integer voice_num=0;
+
+    //For guidance to direction
+    float maxTargerArea = 0f;
+
+
 
     private void vibrate(){
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -202,6 +213,18 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 String[] SelectItem=getResources().getStringArray(R.array.SelectItem);
                 int indexSP = spinnerItem.getSelectedItemPosition(); //被選取項目的位置
                 tv_spinner.setText(SelectItem[indexSP]);
+
+                if(previousItem !=targetItem ){ //上個物件狀態不等於剛剛選取的 >重設大家狀態
+                    aziTarget=999f; //不再方向聲音
+                    aziItem=999f;
+                    maxTargerArea=0f;
+                    gudanceDirection=0;
+                    gudanceCenter=0;
+                    recordAreaTime = 0;
+
+                    previousItem=targetItem;
+                    Log.d(TAG4, String.format("changeItem!"));
+                }
                 targetItem = (indexSP==0) ? 999:indexSP-1; //如果indexSP==0(None)就給999
 
             }
@@ -419,9 +442,24 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             resultNum++;
                         }
 
+                        if (maxArea>maxTargerArea){ //這偵目標物件面積>最大值
+                            //record  now direction and recordTime
+                            aziItem=azi;
+                            recordAreaTime=nowTime;
+                            maxTargerArea=maxArea;
+                            Log.d(TAG4, String.format("record  now direction!"));
+
+                        }
+
+                        if(nowTime-recordAreaTime>10000 && targetItem!=999){//如果record時間差大於10秒 且非NONEitem
+                            aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
+                            Log.d(TAG4, String.format("10 sec for setting aziTarget"));
+
+                        }
+
 //                        Log.d(TAG2,String.format("targetIndex=%d",targetIndex));
                         //這裡就是找到最大的唯一大面積物件index後的運算
-                        if (results.size()!=0 && targetIndex!=999){
+                        if (results.size()!=0 && targetIndex!=999 &&gudanceCenter==1){
 
 //                            Log.d(TAG2, String.format("cls_id =%d",results.get(targetIndex).getClass_idx()));
                             final TfliteRunner.Recognition result=results.get(targetIndex);
@@ -549,13 +587,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         if (Math.abs(rotateTheta)<23.5f){
             Log.d(TAG3, "okAZI");
             rotateStatus=0;
+            gudanceCenter=1; //方向正確才畫面引導
         }
         //物件指引至中心
         if (nowTime-directionVoiceTime>4000) {//偵測間隔時間差3s才放聲音
             directionVoiceTime = nowTime;
-            soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);
+            if(gudanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
+            soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);}
             }
-
+        gudanceDirection = (rotateStatus==0) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
 
     }
     private void adjustSotwLabel(float azimuth) {
