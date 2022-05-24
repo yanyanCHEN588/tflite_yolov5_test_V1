@@ -469,7 +469,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         }
 
-                        if(nowTime-recordAreaTime>10000 && targetItem!=999){//如果record時間差大於10秒 且非NONEitem
+                        if(nowTime-recordAreaTime>8000 && targetItem!=999){//如果record時間差大於8秒 且非NONEitem
                             recordAreaTime=nowTime;
                             aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                             Log.d(TAG4, String.format("10 sec for setting aziTarget"));
@@ -606,14 +606,20 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         if (Math.abs(rotateTheta)<23.5f){
             Log.d(TAG3, "okAZI");
             rotateStatus=0;
+//            soundPool.play(soundMap.get(10), 1, 1, 0, 0, 1); //強制方向正確就要播音，不受時時間限制XXX 不行放這會有重複音
             gudanceCenter=1; //方向正確才畫面引導
         }
         //物件指引至中心
-        if (nowTime-directionVoiceTime>4000) {//偵測間隔時間差3s才放聲音
+        if (nowTime-directionVoiceTime>3000) {//偵測間隔時間差3s才放聲音
             directionVoiceTime = nowTime;
             if(gudanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
             soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);}
             }
+        else { //雖然不在三秒內，但至少要給方向正確的聲音一次
+            if (gudanceDirection !=1 && rotateStatus==0 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
+                soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);
+            }
+        }
         gudanceDirection = (rotateStatus==0) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
 
     }
