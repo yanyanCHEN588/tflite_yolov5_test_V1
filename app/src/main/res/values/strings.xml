@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">flite_tflite_yolov5_test_V1</string>
+    <string name="app_name">視障者取物引導</string>
     <string name="title_activity_main2">MainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
