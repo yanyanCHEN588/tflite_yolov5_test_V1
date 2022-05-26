@@ -83,6 +83,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private long centerVoiceTime = 0;
     private long recordAreaTime  = 0;
     private long directionVoiceTime = 0;
+    private long wornPoseTime = 0;
     private Bitmap rgbFrameBitmap = null;
     private Bitmap croppedBitmap = null;
     private Bitmap cropCopyBitmap = null;
@@ -294,6 +295,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(23, soundPool.load(this, R.raw.west, 1));
         soundMap.put(24, soundPool.load(this, R.raw.westnorth, 1));
         soundMap.put(25, soundPool.load(this, R.raw.angel, 1));
+        soundMap.put(26, soundPool.load(this, R.raw.pitchwarn, 1));
+        soundMap.put(27, soundPool.load(this, R.raw.rollwarn, 1));
     }
 
     private void setupCompass() {
@@ -626,19 +629,44 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private void adjustSotwLabel(float azimuth) {
         tv_magneticSTA.setText(sotwFormatter.format(azimuth));
     }
+
+    private void adjustUserPose(float pitch , float roll){
+        int wornStatus=0;
+        //物件指引至中心
+
+        if(Math.abs(roll)>20){
+            Log.d(TAG3, "手請不要左右歪");
+            wornStatus=27;
+        }
+        if(pitch<=-80){
+            Log.d(TAG3, "手機拿太直請往下一點點");
+            wornStatus=26;
+        }
+        if ((wornStatus==26 || wornStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
+            wornPoseTime = nowTime;
+            soundPool.play(soundMap.get(wornStatus), 1, 1, 0, 0, 1.3f);
+
+        }
+    }
     private Compass.CompassListener getCompassListener() {
         return new Compass.CompassListener() {
             @Override
-            public void onNewAzimuth(final float azimuth) {
+            public void onNewAzimuth(final float azimuth,final float pitch,final float roll) {
                 // UI updates only in UI thread
                 // https://stackoverflow.com/q/11140285/444966
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 //                        adjustArrow(azimuth);
-                        if(aziTarget != 999f){adjustDirection(azimuth);}
-                        adjustSotwLabel(azimuth);
-                        azi=azimuth;
+                        if(pitch>-80){
+                            azi=azimuth; //在這範圍才紀錄AZI 否則維持與提示
+                        }
+                        if(aziTarget != 999f){adjustDirection(azi);}
+                        if(in_status!=1){adjustUserPose(pitch ,  roll);} //物件不在中心才檢測姿態
+
+
+                        adjustSotwLabel(azi);
+
                     }
                 });
             }
