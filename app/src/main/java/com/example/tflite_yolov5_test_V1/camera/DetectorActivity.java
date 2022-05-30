@@ -297,6 +297,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(25, soundPool.load(this, R.raw.angel, 1));
         soundMap.put(26, soundPool.load(this, R.raw.pitchwarn, 1));
         soundMap.put(27, soundPool.load(this, R.raw.rollwarn, 1));
+        soundMap.put(28, soundPool.load(this, R.raw.fpslower, 1));
+        soundMap.put(29, soundPool.load(this, R.raw.okaziman, 1));
     }
 
     private void setupCompass() {
