@@ -60,6 +60,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private  static final String TAG2 = "testResult";
     private  static final String TAG3 = "compass";
     private  static final String TAG4 = "testGudance";
+    private  static final String TAG5 = "voiceStatus";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -112,12 +113,14 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     //status
     private int in_status=0;
-    private int wornStatus=99;
-    private int poseStatus=99;
-    private int rotateStatus=99;
+    private int wornStatus=0;
+    private int poseStatus=0;
+    private int rotateStatus=0;
     private int guidanceDirection=0;
-    private int centerStatus=0;
+    private int centerStatus=1;
     private int guidanceCenter=0;
+    private int voiceCenterCounter=0;
+    private int wornStatusCount=0;
     //物件指引至中心
     private Float dist_x=0f;
     private Float dist_y=0f;
@@ -420,7 +423,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         float fps = (float)1000 / (float)(nowTime - lastProcessingTimeMs);
                         lastProcessingTimeMs = nowTime;
 
-
+                        if (fps < 5f){wornStatus=28;}else {wornStatus=0;}
                         //ImageUtils.saveBitmap(croppedBitmap);
                         detector.setInput(croppedBitmap);
                         final List<TfliteRunner.Recognition> results = detector.runInference();
@@ -487,7 +490,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         }
 
                         //這裡就是找到最大的唯一大面積物件index後的運算
-                        if (results.size()!=0 && targetIndex!=999 &&guidanceCenter==1){
+                        if (results.size()!=0 && targetIndex!=999&&guidanceDirection==1){
 
 //                            Log.d(TAG2, String.format("cls_id =%d",results.get(targetIndex).getClass_idx()));
                             final TfliteRunner.Recognition result=results.get(targetIndex);
@@ -538,17 +541,46 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     centerStatus=5;
                                 }
                             }
-                            //物件指引至中心
-                            if (nowTime-locateVoiceTime>2000) {//偵測間隔時間差2s才放聲音
-                                locateVoiceTime = nowTime;
-                                soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
-                            }
+
 
 
 
                         }
+
                         tracker.trackResults(results);
                         trackingOverlay.postInvalidate();
+
+                        int voiceStatus=0;
+                        //語音播放控制
+                        if (nowTime-locateVoiceTime>2000) {//偵測間隔時間差2s才放聲音
+                            if(wornStatus!=0){
+                                wornStatusCount++;
+                                if (wornStatusCount>2){
+                                    voiceStatus=wornStatus;
+                                    wornStatusCount=0;
+                                }
+
+                            }else if(poseStatus!=0){
+                                voiceStatus = poseStatus;
+                            }else if(guidanceDirection!=1 ){ //方向不正確
+                                voiceStatus = rotateStatus;
+                            }else{
+
+                                if(centerStatus==3){
+                                    voiceCenterCounter++;
+                                }else{voiceCenterCounter=0;}
+                                if(voiceCenterCounter<=2){voiceStatus = centerStatus;}
+//                                voiceStatus = centerStatus;
+                            }
+
+                            guidanceDirection = (rotateStatus==10) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
+                            Log.d(TAG5, String.format("voiceStatus =%d",voiceStatus));
+                            if(voiceStatus !=0 && voiceStatus!=99){
+                                soundPool.play(soundMap.get(voiceStatus), 1, 1, 0, 0, 1f);
+                                locateVoiceTime = nowTime;
+                            }
+
+                        }
 
                         computingDetection = false;
 
@@ -577,23 +609,23 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 //                rotateStatus = (rotateTheta<180f) ? 2 :1 ; //1是大大向右轉,2是大大向左轉
                 if (rotateTheta<180f){
                     Log.d(TAG3, "大大向左轉校正");
-                    rotateStatus=2;
+                    rotateStatus=12;
                 }
                 else {
                     Log.d(TAG3, "大大向右轉校正 ");
-                    rotateStatus=1;
+                    rotateStatus=11;
                 }
 
             }
             if(aziTarget>azimuth){
-//                rotateStatus = (aziTarget-azimuth<180f) ? 1 :2 ; //1是大大向右轉,2是大大向左轉
+//                rotateStatus = (aziTarget-azimuth<180f) ? 11 :12 ; //1是大大向右轉,2是大大向左轉
                 if (aziTarget-azimuth<180f){
                     Log.d(TAG3, "大大向右轉校正");
-                    rotateStatus=1;
+                    rotateStatus=11;
                 }
                 else {
                     Log.d(TAG3, "大大向左轉校正 ");
-                    rotateStatus=2;
+                    rotateStatus=12;
                 }
 
             }
@@ -601,38 +633,38 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         }
         if(rotateTheta>45f && rotateTheta<=90f){
             Log.d(TAG3, "向左轉");
-            rotateStatus=4;
+            rotateStatus=14;
         }
         if(rotateTheta>23.5f && rotateTheta<=45f){
             Log.d(TAG3, "稍微向左轉");
-            rotateStatus=6;
+            rotateStatus=16;
         }
         if(rotateTheta<-45f && rotateTheta>=-90f){
             Log.d(TAG3, "向右轉");
-            rotateStatus=3;
+            rotateStatus=13;
         }
         if(rotateTheta<-23.5f && rotateTheta>=-45f){
             Log.d(TAG3, "稍微向右轉");
-            rotateStatus=5;
+            rotateStatus=15;
         }
         if (Math.abs(rotateTheta)<23.5f){
             Log.d(TAG3, "okAZI");
-            rotateStatus=0;
+            rotateStatus=10;
 //            soundPool.play(soundMap.get(10), 1, 1, 0, 0, 1); //強制方向正確就要播音，不受時時間限制XXX 不行放這會有重複音
-            guidanceCenter=1; //方向正確才畫面引導
+//            guidanceCenter=1; //方向正確才畫面引導
         }
-        //物件方向語音指引
-        if (nowTime-directionVoiceTime>3000) {//偵測間隔時間差3s才放聲音
-            directionVoiceTime = nowTime;
-            if(guidanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
-            soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);}
-            }
-        else { //雖然不在三秒內，但至少要給方向正確的聲音一次
-            if (guidanceDirection !=1 && rotateStatus==0 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
-                soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);
-            }
-        }
-        guidanceDirection = (rotateStatus==0) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
+//        //物件方向語音指引
+//        if (nowTime-directionVoiceTime>3000) {//偵測間隔時間差3s才放聲音
+//            directionVoiceTime = nowTime;
+//            if(guidanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
+//            soundPool.play(soundMap.get(rotateStatus), 1, 1, 0, 0, 1);}
+//            }
+//        else { //雖然不在三秒內，但至少要給方向正確的聲音一次
+//            if (guidanceDirection !=1 && rotateStatus==10 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
+//                soundPool.play(soundMap.get(rotateStatus), 1, 1, 0, 0, 1);
+//            }
+//        }
+//        guidanceDirection = (rotateStatus==10) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
 
     }
     private void adjustSotwLabel(float azimuth) {
@@ -649,12 +681,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         else if(pitch<=-80){
             Log.d(TAG3, "手機拿太直請往下一點點");
             poseStatus=26;
-        }else {poseStatus=99;}
-        if ((poseStatus==26 || poseStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
-            wornPoseTime = nowTime;
-            soundPool.play(soundMap.get(poseStatus), 1, 1, 0, 0, 1.3f);
-
-        }
+        }else {poseStatus=0;}
+//        if ((poseStatus==26 || poseStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
+//            wornPoseTime = nowTime;
+//            soundPool.play(soundMap.get(poseStatus), 1, 1, 0, 0, 1.3f);
+//
+//        }
 
     }
 
