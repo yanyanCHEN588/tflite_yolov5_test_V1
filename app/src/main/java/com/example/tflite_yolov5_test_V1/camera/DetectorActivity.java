@@ -84,6 +84,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private long recordAreaTime  = 0;
     private long directionVoiceTime = 0;
     private long wornPoseTime = 0;
+
     private Bitmap rgbFrameBitmap = null;
     private Bitmap croppedBitmap = null;
     private Bitmap cropCopyBitmap = null;
@@ -110,9 +111,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private HashMap<Integer, Integer> soundMap=new HashMap<Integer, Integer>(); //不用宣布大小，利用put動態增加
 
     //status
-    private Integer in_status=0;
-    private Integer gudanceDirection=0;
-    private Integer gudanceCenter=0;
+    private int in_status=0;
+    private int wornStatus=99;
+    private int poseStatus=99;
+    private int rotateStatus=99;
+    private int guidanceDirection=0;
+    private int centerStatus=0;
+    private int guidanceCenter=0;
     //物件指引至中心
     private Float dist_x=0f;
     private Float dist_y=0f;
@@ -228,8 +233,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     aziTarget=999f; //不再方向聲音
                     aziItem=999f;
                     maxTargerArea=0f;
-                    gudanceDirection=0;
-                    gudanceCenter=0;
+                    guidanceDirection=0;
+                    guidanceCenter=0;
                     recordAreaTime = 0;
 
                     previousItem=targetItem;
@@ -474,16 +479,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         }
 
-                        if(nowTime-recordAreaTime>8000 && targetItem!=999){//如果record時間差大於8秒 且非NONEitem
+                        if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於8秒 且非NONEitem
                             recordAreaTime=nowTime;
                             aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                             Log.d(TAG4, String.format("10 sec for setting aziTarget"));
 
                         }
 
-//                        Log.d(TAG2,String.format("targetIndex=%d",targetIndex));
                         //這裡就是找到最大的唯一大面積物件index後的運算
-                        if (results.size()!=0 && targetIndex!=999 &&gudanceCenter==1){
+                        if (results.size()!=0 && targetIndex!=999 &&guidanceCenter==1){
 
 //                            Log.d(TAG2, String.format("cls_id =%d",results.get(targetIndex).getClass_idx()));
                             final TfliteRunner.Recognition result=results.get(targetIndex);
@@ -493,18 +497,18 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             canvas.drawRect(location, paint);
                             canvas.drawPoint(location.centerX(),location.centerY(), paint);
                             Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);
-//                                if(location.centerX()<trackedPosD.centerX()&& location.centerY()<trackedPosD.centerY()){
+
                             //判斷物件是否在中心
                             if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
                                 Log.d(TAG2, "in!!!!.............");
                                 if(in_status==0){
-                                    //進去中心只會撥放一次聲音了，但是會因為物間在中心邊界造成震盪，而標註框閃爍時會有重疊音
+                                    //TODO 進去中心只會撥放一次聲音了，但是會因為物間在中心邊界造成震盪，而標註框閃爍時會有重疊音
                                     in_status=1;
-                                    soundPool.play(soundMap.get(3), 1, 1, 0, 0,1.5f);
+                                    centerStatus=3;
                                 }
                                 if(result.getLocation().width() * result.getLocation().height() >thArea ){
                                     Log.d(TAG2, "area OK!~~~~~~");
-                                    soundPool.play(soundMap.get(25), 1, 1, 0, 0, 1f);
+                                    centerStatus=25;
                                 }
 
                             }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
@@ -513,29 +517,34 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                             }
 
-                            //物件指引至中心
-                            if (nowTime-locateVoiceTime>3000) {//偵測間隔時間差3s才放聲音
-                                locateVoiceTime = nowTime;
-                                //物件指引至中心 已經看到指定ID的物件了 class_id == XX
-                                dist_x = location.centerX() - trackedPosD.centerX();
-                                dist_y = location.centerY() - trackedPosD.centerY();
-                                if (Math.abs(dist_x) > Math.abs(dist_y)) { //絕對距離 x>y 左右移動
-                                    if (location.centerX() < trackedPosD.left) {//物件在左邊界外、要右移，但畫面是相反的，所以左移
-                                        soundPool.play(soundMap.get(7), 1, 1, 0, 0, 1f);
-                                    } else if (location.centerX() > trackedPosD.right) {//物件在右邊界外、要左移，但畫面是相反的，所以右移
-                                        soundPool.play(soundMap.get(6), 1, 1, 0, 0, 1f);
-                                    }
-                                }
 
-                                if (Math.abs(dist_x) < Math.abs(dist_y)) {//絕對距離 x<y  上下移動
-                                    if (location.centerY() < trackedPosD.top) {//物件在上邊界外、要下移，但畫面是相反的，所以上移
-                                        soundPool.play(soundMap.get(4), 1, 1, 0, 0, 1f);
-                                    } else if (location.centerY() > trackedPosD.bottom) {//物件在下邊界外、要上移，但畫面是相反的，所以下移
-                                        soundPool.play(soundMap.get(5), 1, 1, 0, 0, 1f);
-                                    }
+                            //物件指引至中心 已經看到指定ID的物件了 class_id == XX
+                            dist_x = location.centerX() - trackedPosD.centerX();
+                            dist_y = location.centerY() - trackedPosD.centerY();
+                            if (Math.abs(dist_x) > Math.abs(dist_y)) { //絕對距離 x>y 左右移動
+                                if (location.centerX() < trackedPosD.left) {//物件在左邊界外、要右移，但畫面是相反的，所以左移
+                                    centerStatus=7;
+//                                        soundPool.play(soundMap.get(7), 1, 1, 0, 0, 1f);
+                                } else if (location.centerX() > trackedPosD.right) {//物件在右邊界外、要左移，但畫面是相反的，所以右移
+                                    centerStatus=6;
+//                                        soundPool.play(soundMap.get(6), 1, 1, 0, 0, 1f);
                                 }
-
                             }
+
+                            if (Math.abs(dist_x) < Math.abs(dist_y)) {//絕對距離 x<y  上下移動
+                                if (location.centerY() < trackedPosD.top) {//物件在上邊界外、要下移，但畫面是相反的，所以上移
+                                    centerStatus=4;
+                                } else if (location.centerY() > trackedPosD.bottom) {//物件在下邊界外、要上移，但畫面是相反的，所以下移
+                                    centerStatus=5;
+                                }
+                            }
+                            //物件指引至中心
+                            if (nowTime-locateVoiceTime>2000) {//偵測間隔時間差2s才放聲音
+                                locateVoiceTime = nowTime;
+                                soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
+                            }
+
+
 
                         }
                         tracker.trackResults(results);
@@ -560,9 +569,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
 
     private void adjustDirection(float azimuth) {
-        int rotateStatus=0;
-//        if(azimuth>180){azimuth=azimuth-360f;}
-//        if(aziTarget>180){aziTarget=aziTarget-360f;}
+
         rotateTheta = azimuth - aziTarget;
         Log.d(TAG3, String.format("rotateTheta = %f",rotateTheta));
         if (Math.abs(rotateTheta)>90){
@@ -612,20 +619,20 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
             Log.d(TAG3, "okAZI");
             rotateStatus=0;
 //            soundPool.play(soundMap.get(10), 1, 1, 0, 0, 1); //強制方向正確就要播音，不受時時間限制XXX 不行放這會有重複音
-            gudanceCenter=1; //方向正確才畫面引導
+            guidanceCenter=1; //方向正確才畫面引導
         }
-        //物件指引至中心
+        //物件方向語音指引
         if (nowTime-directionVoiceTime>3000) {//偵測間隔時間差3s才放聲音
             directionVoiceTime = nowTime;
-            if(gudanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
+            if(guidanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
             soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);}
             }
         else { //雖然不在三秒內，但至少要給方向正確的聲音一次
-            if (gudanceDirection !=1 && rotateStatus==0 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
+            if (guidanceDirection !=1 && rotateStatus==0 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
                 soundPool.play(soundMap.get(rotateStatus+10), 1, 1, 0, 0, 1);
             }
         }
-        gudanceDirection = (rotateStatus==0) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
+        guidanceDirection = (rotateStatus==0) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
 
     }
     private void adjustSotwLabel(float azimuth) {
@@ -633,23 +640,24 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     }
 
     private void adjustUserPose(float pitch , float roll){
-        int wornStatus=0;
-        //物件指引至中心
+
 
         if(Math.abs(roll)>20){
             Log.d(TAG3, "手請不要左右歪");
-            wornStatus=27;
+            poseStatus=27;
         }
-        if(pitch<=-80){
+        else if(pitch<=-80){
             Log.d(TAG3, "手機拿太直請往下一點點");
-            wornStatus=26;
-        }
-        if ((wornStatus==26 || wornStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
+            poseStatus=26;
+        }else {poseStatus=99;}
+        if ((poseStatus==26 || poseStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
             wornPoseTime = nowTime;
-            soundPool.play(soundMap.get(wornStatus), 1, 1, 0, 0, 1.3f);
+            soundPool.play(soundMap.get(poseStatus), 1, 1, 0, 0, 1.3f);
 
         }
+
     }
+
     private Compass.CompassListener getCompassListener() {
         return new Compass.CompassListener() {
             @Override
@@ -659,7 +667,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        adjustArrow(azimuth);
+
                         if(pitch>-80){
                             azi=azimuth; //在這範圍才紀錄AZI 否則維持與提示
                         }
