@@ -15,7 +15,7 @@
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="546dp"
+            android:layout_height="500dp"
             tools:context=".camera.CameraActivity">
 
         </FrameLayout>
@@ -85,6 +85,13 @@
                 android:layout_weight="1"
                 android:text="@string/txt_magnetic" />
 
+            <TextView
+                android:id="@+id/tv_item"
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="none" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -99,19 +106,13 @@
                 android:layout_weight="1"
                 android:entries="@array/SelectItem" />
 
-            <TextView
-                android:id="@+id/tv_item"
-                android:layout_width="96dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="none" />
-
             <Button
                 android:id="@+id/bt_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="item" />
+                android:onClick="OnClickReset"
+                android:text="@string/txt_resetStatus" />
         </LinearLayout>
 
     </LinearLayout>

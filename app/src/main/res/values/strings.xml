@@ -4,6 +4,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="txt_resetStatus">重新尋找</string>
     <string name="txt_accelerometer">加速度計</string>
     <string name="txt_linear_accelerometer">直線加速度計</string>
     <string name="txt_gravity">重力</string>

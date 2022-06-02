@@ -102,7 +102,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private BorderedText borderedText;
 
-    private TextView tv_magneticSTA,tv_spinner; //for global
+    private TextView tv_magneticSTA,tv_aziTarger; //for global
 
     private Spinner spinnerItem;
     private int targetItem=999;
@@ -153,6 +153,22 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundPool.play(soundMap.get(index+17), 1, 1, 0, 0, 1);
     }
 
+    public void OnClickReset(View view){ //同樣的物件重新尋找，就不用重複切換清單
+        aziTarget=999f; //不再方向聲音
+        aziItem=999f;
+        maxTargerArea=0f;
+        recordAreaTime = 0;
+        in_status=0;
+        wornStatus=0;
+        poseStatus=0;
+        rotateStatus=0;
+        guidanceDirection=0;
+        centerStatus=0;
+        guidanceCenter=0;
+        voiceCenterCounter=0;
+        wornStatusCount=0;
+
+    }
 
     public float getConfThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.conf_seekBar2)).getProgress()) / 100.0f;}
     public float getIoUThreshFromGUI(){ return ((float)((SeekBar)findViewById(R.id.iou_seekBar2)).getProgress()) / 100.0f;}
@@ -169,7 +185,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         //show TextView
         TextView modeTextView = (TextView)findViewById(R.id.modeTextView); //here is local
         tv_magneticSTA = findViewById(R.id.tv_magneticSTA); //form global
-        tv_spinner = findViewById(R.id.tv_item);
+        tv_aziTarger = findViewById(R.id.tv_item);
 
         String modeText = String.format("Size:%d Mode:%s", TF_OD_API_INPUT_SIZE,MODE.toString());
         modeTextView.setText(modeText);
@@ -235,7 +251,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
             //如果馬上選擇選單我要做什麼
                 String[] SelectItem=getResources().getStringArray(R.array.SelectItem);
                 int indexSP = spinnerItem.getSelectedItemPosition(); //被選取項目的位置
-                tv_spinner.setText(SelectItem[indexSP]);
+//                tv_spinner.setText(SelectItem[indexSP]);
 
                 if(previousItem !=targetItem ){ //上個物件狀態不等於剛剛選取的 >重設大家狀態
                     aziTarget=999f; //不再方向聲音
@@ -324,6 +340,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(28, soundPool.load(this, R.raw.fpslower, 1));
         soundMap.put(29, soundPool.load(this, R.raw.okazi, 1));
         soundMap.put(30, soundPool.load(this, R.raw.turnback, 1));
+        soundMap.put(31, soundPool.load(this, R.raw.ding, 1));
     }
 
     private void setupCompass() {
@@ -502,6 +519,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
                             recordAreaTime=nowTime;
                             aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
+                            tv_aziTarger.setText(String.valueOf(aziTarget));
                             Log.d(TAG4, String.format("5 sec for setting aziTarget"));
 
                         }
