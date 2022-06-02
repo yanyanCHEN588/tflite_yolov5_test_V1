@@ -107,6 +107,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private Spinner spinnerItem;
     private int targetItem=999;
     private int previousItem=999;
+    private int resetItem=999;
 
     //for sound
     private SoundPool soundPool;
@@ -158,6 +159,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         aziItem=999f;
         maxTargerArea=0f;
         recordAreaTime = 0;
+        locateVoiceTime = 0;
         in_status=0;
         wornStatus=0;
         poseStatus=0;
@@ -167,6 +169,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         guidanceCenter=0;
         voiceCenterCounter=0;
         wornStatusCount=0;
+        targetItem=resetItem; //就是繼續上次選的物件
 
     }
 
@@ -258,6 +261,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     aziItem=999f;
                     maxTargerArea=0f;
                     recordAreaTime = 0;
+                    locateVoiceTime = 0;
                     in_status=0;
                     wornStatus=0;
                     poseStatus=0;
@@ -272,7 +276,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     Log.d(TAG4, String.format("changeItem!"));
                 }
                 targetItem = (indexSP==0) ? 999:indexSP-1; //如果indexSP==0(None)就給999
-
+                resetItem =targetItem; //for resetItem
                 if(bigList.indexOf(targetItem) != -1){
                     thAreaRatio=0.8f;
                 }else if(bigMidList.indexOf(targetItem) != -1){
@@ -554,6 +558,23 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     centerStatus=25;
                                     //音樂太慢響 OK了
                                     soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
+                                    //reset Satus 除非按下重新啟動或是找開啟清單找新物件
+                                    aziTarget=999f; //不再方向聲音
+                                    aziItem=999f;
+                                    maxTargerArea=0f;
+                                    recordAreaTime = 0;
+                                    locateVoiceTime = 0;
+                                    in_status=0;
+                                    wornStatus=0;
+                                    poseStatus=0;
+                                    rotateStatus=0;
+                                    guidanceDirection=0;
+                                    centerStatus=0;
+                                    guidanceCenter=0;
+                                    voiceCenterCounter=0;
+                                    wornStatusCount=0;
+                                    targetItem=999; //reset targetItem
+
                                 }
 
                             }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
