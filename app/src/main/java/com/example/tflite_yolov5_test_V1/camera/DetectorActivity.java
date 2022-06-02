@@ -61,6 +61,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private  static final String TAG3 = "compass";
     private  static final String TAG4 = "testGudance";
     private  static final String TAG5 = "voiceStatus";
+    private  static final String TAG6 = "testCenterArea";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -216,9 +217,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
         Integer[] bigArr = new Integer[] {7,11};
         List<Integer> bigList = Arrays.asList(bigArr);
-        Integer[] midArr = new Integer[] { 0,1,10,13,15,16 };
+        Integer[] bigMidArr = new Integer[] {10,13,16};
+        List<Integer> bigMidList = Arrays.asList(bigMidArr);
+        Integer[] midArr = new Integer[] { 0,1,15 };
         List<Integer> midList = Arrays.asList(midArr);
-        Integer[] smlArr = new Integer[] {2,3,4,5,6,8,9,12,14};
+        Integer[] midSmlArr = new Integer[] {2,3,4,5,6,9,12,14};
+        List<Integer> midSmlList = Arrays.asList(midSmlArr);
+        Integer[] smlArr = new Integer[] {8,14};
         List<Integer> smlList = Arrays.asList(smlArr);
 
         //選單init
@@ -254,10 +259,14 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                 if(bigList.indexOf(targetItem) != -1){
                     thAreaRatio=0.8f;
-                }else if(midList.indexOf(targetItem) != -1){
+                }else if(bigMidList.indexOf(targetItem) != -1){
                     thAreaRatio=0.5f;
-                }else {
-                    thAreaRatio=0.3f;
+                }else if(midList.indexOf(targetItem) != -1) {
+                    thAreaRatio=0.25f;
+                }else if(midSmlList.indexOf(targetItem) != -1){
+                    thAreaRatio=0.11f;
+                }else{
+                    thAreaRatio=0.06f;
                 }
                 Log.d(TAG4, String.format("thAreaRatio=%f",thAreaRatio));
 
@@ -518,8 +527,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     in_status=1;
                                     centerStatus=3;
                                 }
-                                if(result.getLocation().width() * result.getLocation().height() >thArea ){
+                                float nowArea=result.getLocation().width() * result.getLocation().height();
+                                float testAreaRatio= nowArea/(detectorInputSize * scale_width * detectorInputSize* scale_height);
+                                Log.d(TAG6, String.format("area =%f",testAreaRatio));
+                                if(nowArea >thArea ){
                                     Log.d(TAG2, "area OK!~~~~~~");
+                                    Log.d(TAG6, String.format("OK~~~~~~~~~~area =%f",nowArea));
                                     centerStatus=25;
                                     //音樂太慢響 OK了
                                     soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
@@ -589,7 +602,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 }
                                 if(in_status==1){
                                     voiceCenterCounter++;
-                                    if(voiceCenterCounter==1||voiceCenterCounter==7){voiceStatus = 3;}
+                                    if(voiceCenterCounter==1||voiceCenterCounter==5){voiceStatus = 3;}
                                 }else{voiceCenterCounter=0;}
 
 //                                voiceStatus = centerStatus;
