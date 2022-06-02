@@ -117,7 +117,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private int poseStatus=0;
     private int rotateStatus=0;
     private int guidanceDirection=0;
-    private int centerStatus=1;
+    private int centerStatus=0;
     private int guidanceCenter=0;
     private int voiceCenterCounter=0;
     private int wornStatusCount=0;
@@ -236,9 +236,16 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     aziTarget=999f; //不再方向聲音
                     aziItem=999f;
                     maxTargerArea=0f;
-                    guidanceDirection=0;
-                    guidanceCenter=0;
                     recordAreaTime = 0;
+                    in_status=0;
+                    wornStatus=0;
+                    poseStatus=0;
+                    rotateStatus=0;
+                    guidanceDirection=0;
+                    centerStatus=0;
+                    guidanceCenter=0;
+                    voiceCenterCounter=0;
+                    wornStatusCount=0;
 
                     previousItem=targetItem;
                     Log.d(TAG4, String.format("changeItem!"));
@@ -287,7 +294,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(7, soundPool.load(this, R.raw.left, 1));
         soundMap.put(8, soundPool.load(this, R.raw.riser, 1));
         soundMap.put(9, soundPool.load(this, R.raw.flat, 1));
-        soundMap.put(10, soundPool.load(this, R.raw.okazi, 1));
+        soundMap.put(10, soundPool.load(this, R.raw.okaziman, 1));
         soundMap.put(11, soundPool.load(this, R.raw.bigtrunright, 1));
         soundMap.put(12, soundPool.load(this, R.raw.bigturnleft, 1));
         soundMap.put(13, soundPool.load(this, R.raw.trunright, 1));
@@ -306,7 +313,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(26, soundPool.load(this, R.raw.pitchwarn, 1));
         soundMap.put(27, soundPool.load(this, R.raw.rollwarn, 1));
         soundMap.put(28, soundPool.load(this, R.raw.fpslower, 1));
-        soundMap.put(29, soundPool.load(this, R.raw.okaziman, 1));
+        soundMap.put(29, soundPool.load(this, R.raw.okazi, 1));
+        soundMap.put(30, soundPool.load(this, R.raw.turnback, 1));
     }
 
     private void setupCompass() {
@@ -482,10 +490,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         }
 
-                        if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於8秒 且非NONEitem
+                        if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
                             recordAreaTime=nowTime;
                             aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
-                            Log.d(TAG4, String.format("10 sec for setting aziTarget"));
+                            Log.d(TAG4, String.format("5 sec for setting aziTarget"));
 
                         }
 
@@ -501,6 +509,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             canvas.drawPoint(location.centerX(),location.centerY(), paint);
                             Log.d(TAG2, "results  location"+ location+"title>"+title+" id:"+class_id);
 
+                            centerStatus=0;
                             //判斷物件是否在中心
                             if(location.centerX()>trackedPosD.left && location.centerX()<trackedPosD.right  && location.centerY()>trackedPosD.top && location.centerY()<trackedPosD.bottom){
                                 Log.d(TAG2, "in!!!!.............");
@@ -512,6 +521,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 if(result.getLocation().width() * result.getLocation().height() >thArea ){
                                     Log.d(TAG2, "area OK!~~~~~~");
                                     centerStatus=25;
+                                    //音樂太慢響 OK了
+                                    soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
                                 }
 
                             }else if ( in_status==1 ){ //不在中心且已經有in_status代表進去中心過了
@@ -562,14 +573,25 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                             }else if(poseStatus!=0){
                                 voiceStatus = poseStatus;
+                                poseStatus=0;
                             }else if(guidanceDirection!=1 ){ //方向不正確
+
                                 voiceStatus = rotateStatus;
+//                                rotateStatus=0;
+//                                if(in_status==1){
+//                                    voiceStatus=29; //物件有在中心，直接女生聲音方向正確(整合目標物在畫面中央了+方向正確)
+//                                }
                             }else{
 
-                                if(centerStatus==3){
+                                if(/*voiceCenterCounter<=2 &&*/centerStatus!=0 && in_status!=1){
+                                    voiceStatus = centerStatus;
+                                    centerStatus=0;
+                                }
+                                if(in_status==1){
                                     voiceCenterCounter++;
+                                    if(voiceCenterCounter==1||voiceCenterCounter==7){voiceStatus = 3;}
                                 }else{voiceCenterCounter=0;}
-                                if(voiceCenterCounter<=2){voiceStatus = centerStatus;}
+
 //                                voiceStatus = centerStatus;
                             }
 
@@ -703,7 +725,14 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         if(pitch>-80){
                             azi=azimuth; //在這範圍才紀錄AZI 否則維持與提示
                         }
-                        if(aziTarget != 999f){adjustDirection(azi);}
+                        if(aziTarget != 999f){
+
+                            adjustDirection(azi);
+                            //手慢慢靠近畫面中央過程中，如果手歪掉就使方向等於沒有偵測
+                            if(in_status==1 && Math.abs(roll)>15){
+                                rotateStatus=0;
+                            }
+                        }
                         if(in_status!=1){adjustUserPose(pitch ,  roll);} //物件不在中心才檢測姿態
 
 
