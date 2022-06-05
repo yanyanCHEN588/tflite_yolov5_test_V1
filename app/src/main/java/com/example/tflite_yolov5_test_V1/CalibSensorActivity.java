@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import android.view.View.OnClickListener; //for implements OnClickListener
 
+import com.example.tflite_yolov5_test_V1.camera.DetectorActivity;
 import com.example.tflite_yolov5_test_V1.compass.Compass; //import compass
 import com.example.tflite_yolov5_test_V1.compass.SOTWFormatter;
 import androidx.appcompat.app.AppCompatActivity;
@@ -149,7 +150,13 @@ public class CalibSensorActivity extends AppCompatActivity implements OnClickLis
         setupCompass();
 
 
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();        // 退出此Activity
+                // 這樣可以避免使用者按 back 後，又回到該 Activity。
+            }
+        }, 8000); //八秒後返回Main
     }
 
 
