@@ -97,7 +97,14 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("runmode",runmode);
         startActivity(intent);
     }
+    public void OnOpenCalibView(View view){
 
+
+        //設定"換頁"物件，且換到哪頁
+        Intent intent = new Intent(MainActivity.this,CalibSensorActivity.class);
+        //啟動換頁
+        startActivity(intent);
+    }
     private TfliteRunMode.Mode getRunModeFromGUI(){
         boolean model_float = ((RadioButton)findViewById(R.id.radioButton_modelFloat)).isChecked();
         boolean model_int8 = ((RadioButton)findViewById(R.id.radioButton_modelInt)).isChecked();

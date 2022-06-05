@@ -11,6 +11,10 @@
     <string name="txt_magnetic">地磁</string>
     <string name="txt_gyroscope">陀螺儀</string>
     <string name="txt_rotation_vector">旋轉向量</string>
+    <string name="txt_calibSensor">校正感測器</string>
+    <string name="txt_info">現在數值:</string>
+    <string name="txt_pitch">仰角</string>
+    <string name="txt_roll">側傾角</string>
     <string name="sotw_north">N</string>
     <string name="sotw_east">E</string>
     <string name="sotw_south">S</string>

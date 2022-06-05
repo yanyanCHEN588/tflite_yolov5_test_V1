@@ -26,6 +26,13 @@
                 android:onClick="OnOpenCameraButtonClick"
                 android:text="Open Camera" />
 
+            <Button
+                android:id="@+id/bt_calibSensor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="OnOpenCalibView"
+                android:text="@string/txt_calibSensor" />
+
             <TextView
                 android:id="@+id/select_model_label"
                 android:layout_width="match_parent"
