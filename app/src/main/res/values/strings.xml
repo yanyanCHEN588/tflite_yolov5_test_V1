@@ -15,6 +15,8 @@
     <string name="txt_info">現在數值:</string>
     <string name="txt_pitch">仰角</string>
     <string name="txt_roll">側傾角</string>
+    <string name="txt_nowdirection">現在方位</string>
+    <string name="txt_hintCalib">請將手機繞八以校正方位，將自動返回上一個頁面</string>
     <string name="sotw_north">N</string>
     <string name="sotw_east">E</string>
     <string name="sotw_south">S</string>
