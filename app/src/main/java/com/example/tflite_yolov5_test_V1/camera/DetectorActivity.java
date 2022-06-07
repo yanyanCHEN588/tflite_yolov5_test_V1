@@ -724,21 +724,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         if (Math.abs(rotateTheta)<23.5f){
             Log.d(TAG3, "okAZI");
             rotateStatus=10;
-//            soundPool.play(soundMap.get(10), 1, 1, 0, 0, 1); //強制方向正確就要播音，不受時時間限制XXX 不行放這會有重複音
-//            guidanceCenter=1; //方向正確才畫面引導
+
         }
-//        //物件方向語音指引
-//        if (nowTime-directionVoiceTime>3000) {//偵測間隔時間差3s才放聲音
-//            directionVoiceTime = nowTime;
-//            if(guidanceDirection!=1){//方向不正確就要播放聲音，正確則不再播
-//            soundPool.play(soundMap.get(rotateStatus), 1, 1, 0, 0, 1);}
-//            }
-//        else { //雖然不在三秒內，但至少要給方向正確的聲音一次
-//            if (guidanceDirection !=1 && rotateStatus==10 ){//準備切換為gudanceDirection正確前要給方向正確的聲音
-//                soundPool.play(soundMap.get(rotateStatus), 1, 1, 0, 0, 1);
-//            }
-//        }
-//        guidanceDirection = (rotateStatus==10) ? 1 :0 ; //在方向正確給1,其餘都是給0 //放這裡至少方向正確會播放一次聲音
+
 
     }
     private void adjustSotwLabel(float azimuth) {
@@ -756,11 +744,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
             Log.d(TAG3, "手機拿太直請往下一點點");
             poseStatus=26;
         }else {poseStatus=0;}
-//        if ((poseStatus==26 || poseStatus ==27)&&nowTime-wornPoseTime>3000) {//間隔時間差2s才放聲音
-//            wornPoseTime = nowTime;
-//            soundPool.play(soundMap.get(poseStatus), 1, 1, 0, 0, 1.3f);
-//
-//        }
+
 
     }
 
