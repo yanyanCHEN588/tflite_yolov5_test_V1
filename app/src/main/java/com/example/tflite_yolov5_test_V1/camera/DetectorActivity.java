@@ -676,54 +676,88 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private void adjustDirection(float azimuth) {
 
-        rotateTheta = azimuth - aziTarget;
-        Log.d(TAG3, String.format("rotateTheta = %f",rotateTheta));
-        if (Math.abs(rotateTheta)>90){
-            if(azimuth >aziTarget){
-//                rotateStatus = (rotateTheta<180f) ? 2 :1 ; //1是大大向右轉,2是大大向左轉
-                if (rotateTheta<180f){
-                    Log.d(TAG3, "大大向左轉校正");
-                    rotateStatus=12;
-                }
-                else {
-                    Log.d(TAG3, "大大向右轉校正 ");
-                    rotateStatus=11;
-                }
+        float turnRight,turnLeft;
+        if(azimuth>aziTarget){//now>target
 
-            }
-            if(aziTarget>azimuth){
-//                rotateStatus = (aziTarget-azimuth<180f) ? 11 :12 ; //1是大大向右轉,2是大大向左轉
-                if (aziTarget-azimuth<180f){
+            turnRight = (360-azimuth)+(aziTarget-0);
+            turnLeft = (azimuth-aziTarget);
+            //右轉比較小，就右轉
+            if(turnRight<turnLeft){
+                if (turnRight<=23.5f){
+                    Log.d(TAG3, "okAZI");
+                    rotateStatus=10;
+                }else if(turnRight>23.5f && turnRight<=45f){
+                    Log.d(TAG3, "稍微向右轉");
+                    rotateStatus=15;
+                }
+                else if(turnRight>45f && turnRight<=90f){
+                    Log.d(TAG3, "向右轉");
+                    rotateStatus=13;
+                }else {
                     Log.d(TAG3, "大大向右轉校正");
                     rotateStatus=11;
                 }
-                else {
+            }
+            //左轉比較小，就左轉
+            if(turnRight>turnLeft){
+                if (turnLeft<=23.5f){
+                    Log.d(TAG3, "okAZI");
+                    rotateStatus=10;
+                }else if(turnLeft>23.5f && turnLeft<=45f){
+                    Log.d(TAG3, "稍微向左轉");
+                    rotateStatus=16;
+                }
+                else if(turnLeft>45f && turnLeft<=90f){
+                    Log.d(TAG3, "向左轉");
+                    rotateStatus=14;
+                }else {
                     Log.d(TAG3, "大大向左轉校正 ");
                     rotateStatus=12;
                 }
-
             }
 
+
         }
-        if(rotateTheta>45f && rotateTheta<=90f){
-            Log.d(TAG3, "向左轉");
-            rotateStatus=14;
-        }
-        if(rotateTheta>23.5f && rotateTheta<=45f){
-            Log.d(TAG3, "稍微向左轉");
-            rotateStatus=16;
-        }
-        if(rotateTheta<-45f && rotateTheta>=-90f){
-            Log.d(TAG3, "向右轉");
-            rotateStatus=13;
-        }
-        if(rotateTheta<-23.5f && rotateTheta>=-45f){
-            Log.d(TAG3, "稍微向右轉");
-            rotateStatus=15;
-        }
-        if (Math.abs(rotateTheta)<23.5f){
-            Log.d(TAG3, "okAZI");
-            rotateStatus=10;
+        if(aziTarget>azimuth){//now>target
+
+            turnRight = (aziTarget-azimuth);
+            turnLeft = (azimuth-0)+(360-aziTarget);
+
+            //右轉比較小，就右轉
+            if(turnRight<turnLeft){
+                if (turnRight<=23.5f){
+                    Log.d(TAG3, "okAZI");
+                    rotateStatus=10;
+                }else if(turnRight>23.5f && turnRight<=45f){
+                    Log.d(TAG3, "稍微向右轉");
+                    rotateStatus=15;
+                }
+                else if(turnRight>45f && turnRight<=90f){
+                    Log.d(TAG3, "向右轉");
+                    rotateStatus=13;
+                }else {
+                    Log.d(TAG3, "大大向右轉校正");
+                    rotateStatus=11;
+                }
+            }
+            //左轉比較小，就左轉
+            if(turnRight>turnLeft){
+                if (turnLeft<=23.5f){
+                    Log.d(TAG3, "okAZI");
+                    rotateStatus=10;
+                }else if(turnLeft>23.5f && turnLeft<=45f){
+                    Log.d(TAG3, "稍微向左轉");
+                    rotateStatus=16;
+                }
+                else if(turnLeft>45f && turnLeft<=90f){
+                    Log.d(TAG3, "向左轉");
+                    rotateStatus=14;
+                }else {
+                    Log.d(TAG3, "大大向左轉校正 ");
+                    rotateStatus=12;
+                }
+            }
+
 
         }
 
