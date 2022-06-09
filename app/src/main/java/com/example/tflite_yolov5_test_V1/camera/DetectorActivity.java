@@ -14,6 +14,7 @@ import android.media.AudioAttributes;
 import android.media.ImageReader;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -131,6 +132,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     //For guidance to direction
     float maxTargerArea = 0f;
 
+    //count
+    private int countSeeDirectionSatus=0; //有沒有在該方向看到物件計算的狀態
+    int targetIndex= 999; //最大面積的target
 
 
     private void vibrate(){
@@ -345,6 +349,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         soundMap.put(29, soundPool.load(this, R.raw.okazi, 1));
         soundMap.put(30, soundPool.load(this, R.raw.turnback, 1));
         soundMap.put(31, soundPool.load(this, R.raw.ding, 1));
+        soundMap.put(32, soundPool.load(this, R.raw.findagain, 1));
     }
 
     private void setupCompass() {
@@ -493,7 +498,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         canvas.drawRect(trackedPosD, paintBound); //由x1,y1,x2,y2畫出四個邊界框框
 
                         int resultNum=0; //紀錄現在的index
-                        int targetIndex= 999; //最大面積的target
+                        targetIndex= 999; //最大面積的target
                         float maxArea=0f;
                         float thArea = thAreaRatio * detectorInputSize * scale_width * detectorInputSize* scale_height ; //目標物在畫面超過多少面積比例的標準
                         for (final TfliteRunner.Recognition result : results) {
@@ -629,10 +634,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             }else if(guidanceDirection!=1 ){ //方向不正確
 
                                 voiceStatus = rotateStatus;
-//                                rotateStatus=0;
-//                                if(in_status==1){
-//                                    voiceStatus=29; //物件有在中心，直接女生聲音方向正確(整合目標物在畫面中央了+方向正確)
-//                                }
+                                if(targetIndex!=999 && rotateStatus==10){//目標物有在畫面且方向正確就給女生聲音說方向正確
+                                    voiceStatus=29;
+                                }
                             }else{
 
                                 if(/*voiceCenterCounter<=2 &&*/centerStatus!=0 && in_status!=1){
@@ -656,6 +660,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         }
 
+                        //在方向正確後開始執行是不是真的看到
+                        //在沒有看到的狀態下 且方向正確
+                        if(countSeeDirectionSatus==0 &&guidanceDirection==1){
+                            countSeeDirectionSatus=1;//代表在看
+                            triggeredCount();
+
+
+                        }
+
                         computingDetection = false;
 
                         runOnUiThread(
@@ -672,8 +685,72 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     }
                 });
     }
+    //方向正確後進來確認看看三秒內有沒有指定物件
+    private void triggeredCount() {
+
+            new CountDownTimer(8000, 200) {//照這樣是8秒倒數 //偵測率為0.2秒
+                int seeItem = 0;
+                int nonseeItem = 0;
+                int centerCount=0;
+                public void onTick(long millisUntilFinished) {
+                    if (centerStatus == 3) { //目標物在畫面中央，在這期間發生兩次後就不會觸發重新尋找
+
+                        centerCount++;
+                    }
 
 
+                    if (guidanceDirection == 1 && centerCount<2) { //正確方向上才去紀錄 且進入中心次數小於兩次
+
+
+
+                        if (targetIndex == 999) {
+                            nonseeItem++;
+                        } else {
+                            seeItem++;
+                        }
+                    }
+
+                    if (centerStatus != 0) {
+                        //當有畫面引導就重新歸零
+                        seeItem = 0;
+                        nonseeItem = 0;
+                    }
+//                    String info_t1m = Long.toString(millisUntilFinished);
+//                    Log.i("testCountDown", "method " + info_t1m);
+//                mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                }
+
+                public void onFinish() {
+                    //我想盡量避免重新尋找觸發
+                    if((nonseeItem+seeItem)!=0 &&seeItem/(nonseeItem+seeItem) <0.8 &&guidanceDirection==1 && targetIndex==999 ){ //再確認一次現在是在方向正確上 且真的沒有看到
+                        //看到率低於八成>>就要重新尋找
+                        centerStatus=32;
+                        soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
+
+                        //重新尋找
+                        aziTarget=999f; //不再方向聲音
+                        aziItem=999f;
+                        maxTargerArea=0f;
+                        recordAreaTime = 0;
+                        locateVoiceTime = 0;
+                        in_status=0;
+                        wornStatus=0;
+                        poseStatus=0;
+                        rotateStatus=0;
+                        guidanceDirection=0;
+                        centerStatus=0;
+                        guidanceCenter=0;
+                        voiceCenterCounter=0;
+                        wornStatusCount=0;
+                        targetItem=resetItem; //就是繼續上次選的物件
+
+                    }
+//                    Log.i("testCountDown", "method Done!");
+                    countSeeDirectionSatus=0; //reset 看的狀態
+                }
+
+            }.start();
+    }
     private void adjustDirection(float azimuth) {
 
         float turnRight,turnLeft;
