@@ -504,7 +504,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         for (final TfliteRunner.Recognition result : results) {
                             if (targetItem!=999) {//有被清單選擇到
                                 //有看到指定物件　且 信心>0.2 就計算面積
-                                if (result.getClass_idx() == targetItem && result.getConfidence() >= 0.2f) {
+                                if (result.getClass_idx() == targetItem && result.getConfidence() >= 0.25f) {
                                     float area = result.getLocation().width() * result.getLocation().height();
                                     //最大的面積該index會記錄起來
                                     if (area > maxArea) {
@@ -516,7 +516,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             resultNum++;
                         }
 
-                        if (maxArea>maxTargerArea){ //這偵目標物件面積>最大值
+                        if (maxArea>maxTargerArea &&targetItem!=7 ){ //這偵目標物件面積>最大值
                             //record  now direction and recordTime
                             aziItem=azi;
                             recordAreaTime=nowTime;
@@ -524,6 +524,22 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             Log.d(TAG4, String.format("record  now direction!"));
 
                         }
+
+                        if (maxArea>maxTargerArea &&targetItem==7 ){ //這偵目標物件面積>最大值
+                                //如果目標物是椅子，需要高大於框25%才行紀錄
+                            final TfliteRunner.Recognition result=results.get(targetIndex);
+                            if(result.getLocation().width()*1.25f < result.getLocation().height()){
+                                //高大於1.25倍的寬
+                                //record  now direction and recordTime
+                                aziItem=azi;
+                                recordAreaTime=nowTime;
+                                maxTargerArea=maxArea;
+                                Log.d(TAG4, String.format("chair record  now direction!"));
+                            }
+
+                        }
+
+
 
                         if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
                             recordAreaTime=nowTime;
@@ -699,8 +715,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     }
 
 
-                    if (guidanceDirection == 1 && centerCount<2) { //正確方向上才去紀錄 且進入中心次數小於兩次
-
+                    if (guidanceDirection == 1 && centerCount<2 && millisUntilFinished>3000l) { //正確方向上才去紀錄 且進入中心次數小於兩次
+                            //也要剩下時間大於3秒
 
 
                         if (targetIndex == 999) {
@@ -715,6 +731,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         seeItem = 0;
                         nonseeItem = 0;
                     }
+
 //                    String info_t1m = Long.toString(millisUntilFinished);
 //                    Log.i("testCountDown", "method " + info_t1m);
 //                mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
