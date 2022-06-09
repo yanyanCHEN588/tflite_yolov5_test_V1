@@ -63,6 +63,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private  static final String TAG4 = "testGudance";
     private  static final String TAG5 = "voiceStatus";
     private  static final String TAG6 = "testCenterArea";
+    private  static final String TAG7 = "testFpsDetect";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
@@ -134,6 +135,9 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     //count
     private int countSeeDirectionSatus=0; //有沒有在該方向看到物件計算的狀態
+    private int countFPS;
+    private int yesResults=0;
+    private int countResultsFPS=0;
     int targetIndex= 999; //最大面積的target
 
 
@@ -497,6 +501,16 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         final RectF trackedPosD = new RectF(x1, y1, x2, y2);
                         canvas.drawRect(trackedPosD, paintBound); //由x1,y1,x2,y2畫出四個邊界框框
 
+                        Log.d(TAG7, String.format("result len =%d",results.size()));
+                        if(countFPS==0 && results.size()>0){
+                            countFPS=1;//代表在看
+                            resultsCount();
+                        }
+                        if(results.size()>0){
+                            yesResults=1;
+                            countResultsFPS++;
+                        }else {yesResults=0;}
+
                         int resultNum=0; //紀錄現在的index
                         targetIndex= 999; //最大面積的target
                         float maxArea=0f;
@@ -701,6 +715,27 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     }
                 });
     }
+    private void resultsCount(){
+
+            new CountDownTimer(1000, 10) {//照這樣是8秒倒數 //偵測率為0.2秒
+                public void onTick(long millisUntilFinished) {
+//                    String info_t1m = Long.toString(millisUntilFinished);
+//                    Log.i("testCountDown", "method " + info_t1m);
+
+//                mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+                }
+
+                public void onFinish() {
+
+                    Log.i("testCountDown", String.format("ResultsFPS=%d",countResultsFPS));
+                    Log.i("testCountDown", "method Done!");
+                    countResultsFPS=0;
+                    countFPS=0;
+                }
+
+            }.start();
+    }
+
     //方向正確後進來確認看看三秒內有沒有指定物件
     private void triggeredCount() {
 
