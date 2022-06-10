@@ -143,7 +143,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     //array
     private float arrayFrame[] = new float[5];
-    private float arrayChoose[] = new float[5];
+    private float[] arrayChoose = {0, 999f, 0, 0, 0, 0};
 
 
     private void vibrate(){
@@ -173,8 +173,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         aziItem=999f;
         maxTargerArea=0f;
         arraySecCount=0;
-        Arrays.fill(arrayChoose, 0); //初始化arrayChoose
-        Arrays.fill(arrayFrame, 0); //初始化arrayChoose
+        arrayChoose = new float[]{0, 999f, 0, 0, 0, 0}; //初始化arrayChoose
+        Arrays.fill(arrayFrame, 0); //初始化arrayFrame
         recordAreaTime = 0;
         locateVoiceTime = 0;
         in_status=0;
@@ -279,7 +279,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     aziItem=999f;
                     maxTargerArea=0f;
                     arraySecCount=0;
-                    Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                    arrayChoose = new float[]{0, 999f, 0, 0, 0, 0}; //初始化arrayChoose
                     Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                     recordAreaTime = 0;
                     locateVoiceTime = 0;
@@ -551,7 +551,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         }
                         //計算一秒內檢查次數的張數
                         if(results.size()>=0 && countFPS==1){
-                            if(targetIndex!=999&&targetItem!=7){
+                            if(targetIndex!=999&&targetItem!=7&&targetItem!=15){
                                 final TfliteRunner.Recognition result=results.get(targetIndex);
                                 arrayFrame[0]+=result.getConfidence();
                                 arrayFrame[1]+=azi;
@@ -570,16 +570,28 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 }
                             }
 
+                            if(targetIndex!=999&&targetItem==15){
+                                //如果目標物是鍵盤，信心值要大於0.6才行紀錄
+                                final TfliteRunner.Recognition result=results.get(targetIndex);
+                                if(result.getConfidence()>0.6) {
+                                    arrayFrame[0] += result.getConfidence();
+                                    arrayFrame[1] += azi;
+                                    arrayFrame[2] += result.getLocation().width() * result.getLocation().height();
+                                    yesResults++;
+                                }
+                            }
+
                             countResultsFPS++;
                         }else {yesResults=0;}
 
 
 
-                        if(arraySecCount>3 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
+                        if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
                             aziTarget = arrayChoose[1] ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                             arraySecCount=0;
                             tv_aziTarger.setText(String.valueOf(aziTarget));
                             Log.d(TAG4, String.format("5 sec for setting aziTarget"));
+                            recordAreaTime=nowTime;
 
                         }
 
@@ -619,7 +631,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     aziItem=999f;
                                     maxTargerArea=0f;
                                     arraySecCount=0;
-                                    Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                                    arrayChoose = new float[]{0, 999f, 0, 0, 0, 0}; //初始化arrayChoose
                                     Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                                     recordAreaTime = 0;
                                     locateVoiceTime = 0;
@@ -770,9 +782,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 Log.i("testThreadResult", String.format("arrayFrame[3] = %f", arrayFrame[3]));
                 Log.i("testThreadResult", String.format("arrayFrame[4] = %f", arrayFrame[4]));
 
-                countResultsFPS = 0;
-                countFPS = 0;
-                yesResults = 0;
+
 
                 //上面每秒看完後比較最大的喔!
 
@@ -790,8 +800,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     //兩者出現率差異大於0.2
                     if (arrayFrame[4] > arrayChoose[4]) {
                         resultPoint++;
+                        if(targetItem==7){resultPoint++;} //椅子要出現率較為重要
                     } else {
                         targetPoint++;
+                        if(targetItem==7){resultPoint++;}//椅子要出現率較為重要
                     }
 
                 }
@@ -815,8 +827,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     arrayChoose[4] = arrayFrame[4] ;  //detected Rate pre sec (0~1)
 
                 }
-
-
+                countResultsFPS = 0;
+                countFPS = 0;
+                yesResults = 0;
+                recordAreaTime=nowTime;
             }
 
 
@@ -872,7 +886,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         aziItem=999f;
                         maxTargerArea=0f;
                         arraySecCount=0;
-                        Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                        arrayChoose = new float[]{0, 999f, 0, 0, 0, 0}; //初始化arrayChoose
                         Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                         recordAreaTime = 0;
                         locateVoiceTime = 0;
