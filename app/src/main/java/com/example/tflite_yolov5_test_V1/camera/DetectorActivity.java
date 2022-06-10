@@ -573,7 +573,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             if(targetIndex!=999&&targetItem==15){
                                 //如果目標物是鍵盤，信心值要大於0.6才行紀錄
                                 final TfliteRunner.Recognition result=results.get(targetIndex);
-                                if(result.getConfidence()>0.6) {
+                                if(result.getConfidence()>0.7) {
                                     arrayFrame[0] += result.getConfidence();
                                     arrayFrame[1] += azi;
                                     arrayFrame[2] += result.getLocation().width() * result.getLocation().height();
@@ -800,10 +800,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     //兩者出現率差異大於0.2
                     if (arrayFrame[4] > arrayChoose[4]) {
                         resultPoint++;
-                        if(targetItem==7){resultPoint++;} //椅子要出現率較為重要
+                        if(targetItem==7||targetItem==15){resultPoint++;} //椅子與鍵盤要出現率較為重要
                     } else {
                         targetPoint++;
-                        if(targetItem==7){resultPoint++;}//椅子要出現率較為重要
+                        if(targetItem==7||targetItem==15){resultPoint++;}//椅子與鍵盤要出現率較為重要
                     }
 
                 }
@@ -825,12 +825,13 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     arrayChoose[2] = arrayFrame[2] ; //Area
                     arrayChoose[3] = arrayFrame[3] ; //detected pre sec
                     arrayChoose[4] = arrayFrame[4] ;  //detected Rate pre sec (0~1)
+                    recordAreaTime=nowTime;
 
                 }
                 countResultsFPS = 0;
                 countFPS = 0;
                 yesResults = 0;
-                recordAreaTime=nowTime;
+
             }
 
 
