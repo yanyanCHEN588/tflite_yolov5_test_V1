@@ -826,6 +826,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     arrayChoose[3] = arrayFrame[3] ; //detected pre sec
                     arrayChoose[4] = arrayFrame[4] ;  //detected Rate pre sec (0~1)
                     recordAreaTime=nowTime;
+                    soundPool.play(soundMap.get(31), 1, 1, 0, 0, 1f);
+
 
                 }
                 countResultsFPS = 0;
