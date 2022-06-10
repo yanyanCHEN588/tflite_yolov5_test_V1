@@ -49,7 +49,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     private Compass compass;
     private SOTWFormatter sotwFormatter;
-    private float azi;
+    private float azi; //nowAzi
     private float aziTarget=999f;
     private float aziItem=999f;
     private float currentAzimuth;
@@ -139,6 +139,11 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private int yesResults=0;
     private int countResultsFPS=0;
     int targetIndex= 999; //最大面積的target
+    private int arraySecCount=0;
+
+    //array
+    private float arrayFrame[] = new float[5];
+    private float arrayChoose[] = new float[5];
 
 
     private void vibrate(){
@@ -164,8 +169,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
     public void OnClickReset(View view){ //同樣的物件重新尋找，就不用重複切換清單
         aziTarget=999f; //不再方向聲音
+        tv_aziTarger.setText(String.valueOf(aziTarget));
         aziItem=999f;
         maxTargerArea=0f;
+        arraySecCount=0;
+        Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+        Arrays.fill(arrayFrame, 0); //初始化arrayChoose
         recordAreaTime = 0;
         locateVoiceTime = 0;
         in_status=0;
@@ -266,8 +275,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                 if(previousItem !=targetItem ){ //上個物件狀態不等於剛剛選取的 >重設大家狀態
                     aziTarget=999f; //不再方向聲音
+                    tv_aziTarger.setText(String.valueOf(aziTarget));
                     aziItem=999f;
                     maxTargerArea=0f;
+                    arraySecCount=0;
+                    Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                    Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                     recordAreaTime = 0;
                     locateVoiceTime = 0;
                     in_status=0;
@@ -501,28 +514,26 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         final RectF trackedPosD = new RectF(x1, y1, x2, y2);
                         canvas.drawRect(trackedPosD, paintBound); //由x1,y1,x2,y2畫出四個邊界框框
 
-                        Log.d(TAG7, String.format("result len =%d",results.size()));
-                        if(countFPS==0 && results.size()>0){
-                            countFPS=1;//代表在看
-                            resultsCount();
-                        }
-                        if(results.size()>0){
-                            yesResults=1;
-                            countResultsFPS++;
-                        }else {yesResults=0;}
+
 
                         int resultNum=0; //紀錄現在的index
                         targetIndex= 999; //最大面積的target
+                        float maxConfinence=0f;
                         float maxArea=0f;
                         float thArea = thAreaRatio * detectorInputSize * scale_width * detectorInputSize* scale_height ; //目標物在畫面超過多少面積比例的標準
                         for (final TfliteRunner.Recognition result : results) {
                             if (targetItem!=999) {//有被清單選擇到
                                 //有看到指定物件　且 信心>0.2 就計算面積
                                 if (result.getClass_idx() == targetItem && result.getConfidence() >= 0.25f) {
-                                    float area = result.getLocation().width() * result.getLocation().height();
+                                    float confinence = result.getConfidence();
+//                                    float area = result.getLocation().width() * result.getLocation().height();
                                     //最大的面積該index會記錄起來
-                                    if (area > maxArea) {
-                                        maxArea = area;
+//                                    if (area > maxArea) {
+//                                        maxArea = area;
+//                                        targetIndex = resultNum;
+//                                    }
+                                    if (confinence > maxConfinence) {
+                                        maxConfinence = confinence;
                                         targetIndex = resultNum;
                                     }
                                 }
@@ -530,34 +541,31 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                             resultNum++;
                         }
 
-                        if (maxArea>maxTargerArea &&targetItem!=7 ){ //這偵目標物件面積>最大值
-                            //record  now direction and recordTime
-                            aziItem=azi;
-                            recordAreaTime=nowTime;
-                            maxTargerArea=maxArea;
-                            Log.d(TAG4, String.format("record  now direction!"));
-
+                        //每一秒的抓取狀況
+                        Log.d(TAG7, String.format("result len =%d",results.size()));
+                        if(countFPS==0 && targetIndex!=999){
+                            countFPS=1;//代表在看
+                            arraySecCount++;
+                            Arrays.fill(arrayFrame, 0); //初始化arrayFrame這一秒的array
+                            resultsCount();
                         }
-
-                        if (maxArea>maxTargerArea &&targetItem==7 ){ //這偵目標物件面積>最大值
-                                //如果目標物是椅子，需要高大於框25%才行紀錄
-                            final TfliteRunner.Recognition result=results.get(targetIndex);
-                            if(result.getLocation().width()*1.25f < result.getLocation().height()){
-                                //高大於1.25倍的寬
-                                //record  now direction and recordTime
-                                aziItem=azi;
-                                recordAreaTime=nowTime;
-                                maxTargerArea=maxArea;
-                                Log.d(TAG4, String.format("chair record  now direction!"));
+                        //計算一秒內檢查次數的張數
+                        if(results.size()>=0 && countFPS==1){
+                            if(targetIndex!=999){
+                                final TfliteRunner.Recognition result=results.get(targetIndex);
+                                arrayFrame[0]+=result.getConfidence();
+                                arrayFrame[1]+=azi;
+                                arrayFrame[2]+=result.getLocation().width() * result.getLocation().height();
+                                yesResults++;
                             }
+                            countResultsFPS++;
+                        }else {yesResults=0;}
 
-                        }
 
 
-
-                        if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
-                            recordAreaTime=nowTime;
-                            aziTarget = aziItem ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
+                        if(arraySecCount>3 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
+                            aziTarget = arrayChoose[1] ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
+                            arraySecCount=0;
                             tv_aziTarger.setText(String.valueOf(aziTarget));
                             Log.d(TAG4, String.format("5 sec for setting aziTarget"));
 
@@ -595,8 +603,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                     soundPool.play(soundMap.get(centerStatus), 1, 1, 0, 0, 1f);
                                     //reset Satus 除非按下重新啟動或是找開啟清單找新物件
                                     aziTarget=999f; //不再方向聲音
+                                    tv_aziTarger.setText(String.valueOf(aziTarget));
                                     aziItem=999f;
                                     maxTargerArea=0f;
+                                    arraySecCount=0;
+                                    Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                                    Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                                     recordAreaTime = 0;
                                     locateVoiceTime = 0;
                                     in_status=0;
@@ -717,23 +729,86 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     }
     private void resultsCount(){
 
-            new CountDownTimer(1000, 10) {//照這樣是8秒倒數 //偵測率為0.2秒
-                public void onTick(long millisUntilFinished) {
+        new CountDownTimer(1000, 10) {//照這樣是8秒倒數 //偵測率為0.2秒
+            public void onTick(long millisUntilFinished) {
 //                    String info_t1m = Long.toString(millisUntilFinished);
 //                    Log.i("testCountDown", "method " + info_t1m);
 
 //                mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                int resultPoint = 0; //這次新的得分
+                int targetPoint = 0; //原本最大值的得分
+
+                Log.i("testCountDown", String.format("ResultsFPS=%d", countResultsFPS));
+                Log.i("testCountDown", String.format("see frame pre sec=%d", yesResults));
+                Log.i("testCountDown", "method Done!");
+
+                //取有抓到次數的平均
+                arrayFrame[0] = arrayFrame[0] / yesResults; //confidence
+                arrayFrame[1] = arrayFrame[1] / yesResults; //Azi
+                arrayFrame[2] = (arrayFrame[2] / yesResults); //Area
+                arrayFrame[3] = (float) yesResults; //detected pre sec
+                arrayFrame[4] = arrayFrame[3] / (float) countResultsFPS;  //detected Rate pre sec (0~1)
+
+                Log.i("testThreadResult", String.format("arrayFrame[0] = %f", arrayFrame[0]));
+                Log.i("testThreadResult", String.format("arrayFrame[1] = %f", arrayFrame[1]));
+                Log.i("testThreadResult", String.format("arrayFrame[2] = %f", arrayFrame[2]));
+                Log.i("testThreadResult", String.format("arrayFrame[3] = %f", arrayFrame[3]));
+                Log.i("testThreadResult", String.format("arrayFrame[4] = %f", arrayFrame[4]));
+
+                countResultsFPS = 0;
+                countFPS = 0;
+                yesResults = 0;
+
+                //上面每秒看完後比較最大的喔!
+
+                if (Math.abs(arrayFrame[0] - arrayChoose[0]) > 0.2) {
+                    //兩者信心值差異大於0.2
+                    if (arrayFrame[0] > arrayChoose[0]) {
+                        resultPoint++;
+                    } else {
+                        targetPoint++;
+                    }
+
                 }
 
-                public void onFinish() {
+                if (Math.abs(arrayFrame[4] - arrayChoose[4]) > 0.2) {
+                    //兩者出現率差異大於0.2
+                    if (arrayFrame[4] > arrayChoose[4]) {
+                        resultPoint++;
+                    } else {
+                        targetPoint++;
+                    }
 
-                    Log.i("testCountDown", String.format("ResultsFPS=%d",countResultsFPS));
-                    Log.i("testCountDown", "method Done!");
-                    countResultsFPS=0;
-                    countFPS=0;
                 }
 
-            }.start();
+                if (resultPoint == targetPoint) {
+                    //前面兩項比完竟然平手的話 0:0 or 1:1
+                    //再比較面積
+                    if (arrayFrame[2] > arrayChoose[2]) {
+                        resultPoint++;
+                    } else {
+                        targetPoint++;
+                    }
+                }
+
+                if(resultPoint>targetPoint){
+                    //最佳的存起來
+                    arrayChoose[0] = arrayFrame[0] ; //confidence
+                    arrayChoose[1] = arrayFrame[1] ; //Azi
+                    arrayChoose[2] = arrayFrame[2] ; //Area
+                    arrayChoose[3] = arrayFrame[3] ; //detected pre sec
+                    arrayChoose[4] = arrayFrame[4] ;  //detected Rate pre sec (0~1)
+
+                }
+
+
+            }
+
+
+        }.start();
     }
 
     //方向正確後進來確認看看三秒內有沒有指定物件
@@ -781,8 +856,12 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
                         //重新尋找
                         aziTarget=999f; //不再方向聲音
+                        tv_aziTarger.setText(String.valueOf(aziTarget));
                         aziItem=999f;
                         maxTargerArea=0f;
+                        arraySecCount=0;
+                        Arrays.fill(arrayChoose, 0); //初始化arrayChoose
+                        Arrays.fill(arrayFrame, 0); //初始化arrayChoose
                         recordAreaTime = 0;
                         locateVoiceTime = 0;
                         in_status=0;
