@@ -551,13 +551,25 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         }
                         //計算一秒內檢查次數的張數
                         if(results.size()>=0 && countFPS==1){
-                            if(targetIndex!=999){
+                            if(targetIndex!=999&&targetItem!=7){
                                 final TfliteRunner.Recognition result=results.get(targetIndex);
                                 arrayFrame[0]+=result.getConfidence();
                                 arrayFrame[1]+=azi;
                                 arrayFrame[2]+=result.getLocation().width() * result.getLocation().height();
                                 yesResults++;
                             }
+
+                            if(targetIndex!=999&&targetItem==7){
+                                //如果目標物是椅子，需要高大於框25%才行紀錄
+                                final TfliteRunner.Recognition result=results.get(targetIndex);
+                                if(result.getLocation().width()*1.25f < result.getLocation().height()) {
+                                    arrayFrame[0] += result.getConfidence();
+                                    arrayFrame[1] += azi;
+                                    arrayFrame[2] += result.getLocation().width() * result.getLocation().height();
+                                    yesResults++;
+                                }
+                            }
+
                             countResultsFPS++;
                         }else {yesResults=0;}
 
