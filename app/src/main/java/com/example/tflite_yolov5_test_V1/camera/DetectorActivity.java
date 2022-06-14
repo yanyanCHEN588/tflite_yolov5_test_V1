@@ -125,6 +125,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private int guidanceCenter=0;
     private int voiceCenterCounter=0;
     private int wornStatusCount=0;
+    private int dingStatus=0; //判斷是否五秒內ding
     //物件指引至中心
     private Float dist_x=0f;
     private Float dist_y=0f;
@@ -139,7 +140,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private int yesResults=0;
     private int countResultsFPS=0;
     int targetIndex= 999; //最大面積的target
-    private int arraySecCount=0;
+    private int arraySecCount=0; //好像目前沒有用到
 
     //array
     private float arrayFrame[] = new float[5];
@@ -587,8 +588,11 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
 
 
                         if(nowTime-recordAreaTime>5000 && targetItem!=999){//如果record時間差大於5秒 且非NONEitem
+                            //第一個在五秒的更新就ding>>放在這裡是五秒結束且更新才ding
+//                            if(aziTarget!=arrayChoose[1]){soundPool.play(soundMap.get(31), 1, 1, 0, 0, 1f);}
                             aziTarget = arrayChoose[1] ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                             arraySecCount=0;
+                            dingStatus=0;
                             tv_aziTarger.setText(String.valueOf(aziTarget));
                             Log.d(TAG4, String.format("5 sec for setting aziTarget"));
                             recordAreaTime=nowTime;
@@ -689,7 +693,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                         if (nowTime-locateVoiceTime>2000) {//偵測間隔時間差2s才放聲音
                             if(wornStatus!=0){
                                 wornStatusCount++;
-                                if (wornStatusCount>2){
+                                if (wornStatusCount>3){
                                     voiceStatus=wornStatus;
                                     wornStatusCount=0;
                                 }
@@ -826,9 +830,16 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     arrayChoose[3] = arrayFrame[3] ; //detected pre sec
                     arrayChoose[4] = arrayFrame[4] ;  //detected Rate pre sec (0~1)
                     recordAreaTime=nowTime;
-                    soundPool.play(soundMap.get(31), 1, 1, 0, 0, 1f);
-
-
+                    if(dingStatus==0&&guidanceDirection!=1){
+                        //五秒內只會叮一次最大值且方向不正確時
+                        soundPool.play(soundMap.get(31), 1, 1, 0, 0, 1f);
+                    }
+                    dingStatus=1;
+                }
+                //一開始就看到穩定的直接指引
+                //(穩定的定義、一秒內時間出現超過90且信心值高於85)
+                if(arrayFrame[4]>0.9&&arrayFrame[0]>0.85){
+                    aziTarget = arrayChoose[1] ; //設定目標方向 //只要aziTarget不是999就會自動進入引導
                 }
                 countResultsFPS = 0;
                 countFPS = 0;
@@ -843,7 +854,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     //方向正確後進來確認看看三秒內有沒有指定物件
     private void triggeredCount() {
 
-            new CountDownTimer(8000, 200) {//照這樣是8秒倒數 //偵測率為0.2秒
+            new CountDownTimer(5000, 200) {//照這樣是5秒倒數 //偵測率為0.2秒
                 int seeItem = 0;
                 int nonseeItem = 0;
                 int centerCount=0;
