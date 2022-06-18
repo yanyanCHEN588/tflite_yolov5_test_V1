@@ -38,9 +38,9 @@ public class TfliteRunner {
         public float[][][][] out3;
 
         public InferenceRawResult(int inputSize){
-            this.out1 = new float[1][inputSize/8][inputSize/8][3*22];
-            this.out2 = new float[1][inputSize/16][inputSize/16][3*22];
-            this.out3 = new float[1][inputSize/32][inputSize/32][3*22];
+            this.out1 = new float[1][inputSize/8][inputSize/8][3*17];
+            this.out2 = new float[1][inputSize/16][inputSize/16][3*17];
+            this.out3 = new float[1][inputSize/32][inputSize/32][3*17];
         }
     }
     Object[] inputArray;
@@ -183,8 +183,10 @@ public class TfliteRunner {
     //port from TfLite Object Detection example
     /** An immutable result returned by a Detector describing what was recognized. */
     public class Recognition {
-        private final String[] coco_class_names = new String[]{"Umbrella"," Bag"," Bottle"," Cup"," Fork"," Spoon"," Bowl"," Chair"," Remote","Cell Phone","Microwave"," Refrigerator"," Extension-block"," Moniter"," Mouse"," Keyboard","Air-Conditioner"
+        private final String[] coco_class_names = new String[]{"Umbrella"," Bag"," Bottle"," Cup"," Spoon"," Bowl"," Chair"," Remote"," Keyboard"," Extension-block"," Microwave"," Refrigerator"
+        //o12v1
         };
+        //o17v1: "Umbrella"," Bag"," Bottle"," Cup"," Fork"," Spoon"," Bowl"," Chair"," Remote","Cell Phone","Microwave"," Refrigerator"," Extension-block"," Moniter"," Mouse"," Keyboard","Air-Conditioner"
         //"Umbrella"," Bag"," Bottle"," Cup"," Fork"," Spoon"," Bowl"," Chair"," Table"," Remote"," Cell Phone"," Microwave"," Refrigerator"," Scissors"," Toothbrush","Extension-block"
         //private final String[] coco_class_names = new String[]{"person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed", "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"};
         private final Integer class_idx;

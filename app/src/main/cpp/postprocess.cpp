@@ -15,7 +15,7 @@ float revsigmoid(float f){
     return -1.0f * (float)log((1.0f / (f + eps)) - 1.0f);
 }
 
-#define CLASS_NUM 17
+#define CLASS_NUM 12
 #define max_wh 4096
 void detector(
         vector<bbox>* bbox_candidates,
@@ -35,7 +35,7 @@ void detector(
                 jobjectArray ptr_d2 = (jobjectArray)env->GetObjectArrayElement(ptr_d1 ,gx);
                 auto elmptr = env->GetFloatArrayElements((jfloatArray)ptr_d2 , nullptr);
                 for(int ch = 0; ch < 3; ch++){
-                    int offset = 22 * ch;
+                    int offset = 17 * ch;
                     auto elmptr_ch = elmptr + offset;
                     //don't apply sigmoid to all bbox candidates for efficiency
                     float obj_conf_unsigmoid = elmptr_ch[4];

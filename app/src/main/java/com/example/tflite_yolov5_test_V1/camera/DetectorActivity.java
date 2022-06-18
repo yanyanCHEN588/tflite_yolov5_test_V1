@@ -252,15 +252,15 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         sotwFormatter = new SOTWFormatter(this);
         setupCompass();
 
-        Integer[] bigArr = new Integer[] {7,11};
+        Integer[] bigArr = new Integer[] {6,11};
         List<Integer> bigList = Arrays.asList(bigArr);
-        Integer[] bigMidArr = new Integer[] {10,13,16};
+        Integer[] bigMidArr = new Integer[] {10};
         List<Integer> bigMidList = Arrays.asList(bigMidArr);
-        Integer[] midArr = new Integer[] { 0,1,15 };
+        Integer[] midArr = new Integer[] { 0,1,8 };
         List<Integer> midList = Arrays.asList(midArr);
-        Integer[] midSmlArr = new Integer[] {2,3,4,5,6,9,12,14};
+        Integer[] midSmlArr = new Integer[] {2,3,4,5,9};
         List<Integer> midSmlList = Arrays.asList(midSmlArr);
-        Integer[] smlArr = new Integer[] {8,14};
+        Integer[] smlArr = new Integer[] {7};
         List<Integer> smlList = Arrays.asList(smlArr);
 
         //選單init
@@ -300,7 +300,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                 targetItem = (indexSP==0) ? 999:indexSP-1; //如果indexSP==0(None)就給999
                 resetItem =targetItem; //for resetItem
                 if(bigList.indexOf(targetItem) != -1){
-                    thAreaRatio=0.8f;
+                    thAreaRatio=0.75f;
                 }else if(bigMidList.indexOf(targetItem) != -1){
                     thAreaRatio=0.5f;
                 }else if(midList.indexOf(targetItem) != -1) {
@@ -560,7 +560,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 yesResults++;
                             }
 
-                            if(targetIndex!=999&&targetItem==7){
+                            if(targetIndex!=999&&targetItem==6){
                                 //如果目標物是椅子，需要高大於框25%才行紀錄
                                 final TfliteRunner.Recognition result=results.get(targetIndex);
                                 if(result.getLocation().width()*1.25f < result.getLocation().height()) {
@@ -571,7 +571,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                                 }
                             }
 
-                            if(targetIndex!=999&&targetItem==15){
+                            if(targetIndex!=999&&targetItem==8){
                                 //如果目標物是鍵盤，信心值要大於0.6才行紀錄
                                 final TfliteRunner.Recognition result=results.get(targetIndex);
                                 if(result.getConfidence()>0.7) {
@@ -804,10 +804,10 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
                     //兩者出現率差異大於0.2
                     if (arrayFrame[4] > arrayChoose[4]) {
                         resultPoint++;
-                        if(targetItem==7||targetItem==15){resultPoint++;} //椅子與鍵盤要出現率較為重要
+                        if(targetItem==6||targetItem==8){resultPoint++;} //椅子與鍵盤要出現率較為重要
                     } else {
                         targetPoint++;
-                        if(targetItem==7||targetItem==15){resultPoint++;}//椅子與鍵盤要出現率較為重要
+                        if(targetItem==6||targetItem==8){resultPoint++;}//椅子與鍵盤要出現率較為重要
                     }
 
                 }
