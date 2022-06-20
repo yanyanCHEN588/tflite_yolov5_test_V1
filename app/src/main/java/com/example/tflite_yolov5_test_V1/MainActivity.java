@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     final int REQUEST_OPEN_DIRECTORY = 9999;
     //permission
     private int inputSize = -1;
+    private int modelVsionRadio;
     private File[] process_files = null;
     private final int REQUEST_PERMISSION = 1000;
     private final String[] PERMISSIONS = {
@@ -91,10 +92,13 @@ public class MainActivity extends AppCompatActivity {
         TfliteRunMode.Mode runmode = getRunModeFromGUI();
         this.inputSize = getInputSizeFromGUI();
 
+        this.modelVsionRadio=getModelVersionFromGUI();
+
         Intent intent = new Intent(MainActivity.this, DetectorActivity.class);
 
         intent.putExtra("inputSize",this.inputSize);
         intent.putExtra("runmode",runmode);
+        intent.putExtra("modelVersion",this.modelVsionRadio);
         startActivity(intent);
     }
     public void OnOpenCalibView(View view){
@@ -132,6 +136,11 @@ public class MainActivity extends AppCompatActivity {
         RadioButton input_640 = findViewById(R.id.radioButton_640);
         if (input_640.isChecked()) return 640;
         else return 320;
+    }
+    public int getModelVersionFromGUI(){
+        RadioButton modelS = findViewById(R.id.modelVersion_s);
+        if (modelS.isChecked()) return 0;
+        else return 1;
     }
     //Eliminate infeasible run configurations(model, precision)
     public void onModelFloatClick(View view) {

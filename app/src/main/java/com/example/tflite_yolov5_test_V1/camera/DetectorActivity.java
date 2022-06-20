@@ -66,6 +66,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
     private  static final String TAG7 = "testFpsDetect";
 //    private static final int TF_OD_API_INPUT_SIZE = 320; //ORI
     private  int TF_OD_API_INPUT_SIZE = 320;
+    private int modelVsionRadio=0;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
     private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
     private static final String TF_OD_API_LABELS_FILE = "labelmap.txt";
@@ -200,6 +201,8 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         Intent intent=getIntent();
         int TF_OD_API_INPUT_SIZE_get=intent.getIntExtra("inputSize", 320);
         TfliteRunMode.Mode MODE_get = (TfliteRunMode.Mode)intent.getSerializableExtra("runmode");
+        modelVsionRadio=intent.getIntExtra("modelVersion", 0);
+        String modelVersion = (modelVsionRadio==0) ? "s" : "m";
         //assing value
         TF_OD_API_INPUT_SIZE = TF_OD_API_INPUT_SIZE_get;
         MODE=MODE_get;
@@ -208,7 +211,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         tv_magneticSTA = findViewById(R.id.tv_magneticSTA); //form global
         tv_aziTarger = findViewById(R.id.tv_item);
 
-        String modeText = String.format("Size:%d Mode:%s", TF_OD_API_INPUT_SIZE,MODE.toString());
+        String modeText = String.format("Version:%s Size:%d Mode:%s", modelVersion,TF_OD_API_INPUT_SIZE,MODE.toString());
         modeTextView.setText(modeText);
 
         SeekBar conf_seekBar = (SeekBar)findViewById(R.id.conf_seekBar2);
@@ -416,7 +419,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         int cropSize = TF_OD_API_INPUT_SIZE;
 
         try {
-            detector = new TfliteRunner(this, MODE, TF_OD_API_INPUT_SIZE, 0.25f, 0.45f);
+            detector = new TfliteRunner(this,modelVsionRadio, MODE, TF_OD_API_INPUT_SIZE, 0.25f, 0.45f);
             cropSize = TF_OD_API_INPUT_SIZE;
         } catch (final Exception e) {
             e.printStackTrace();

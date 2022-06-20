@@ -48,14 +48,15 @@ public class TfliteRunner {
     InferenceRawResult rawres;
     float conf_thresh;
     float iou_thresh;
-
-    public TfliteRunner(Context context, Mode runmode, int inputSize, float conf_thresh, float iou_thresh) throws Exception{
+    int version;
+    public TfliteRunner(Context context,int ModelVersion, Mode runmode, int inputSize, float conf_thresh, float iou_thresh) throws Exception{
         this.runmode = runmode;
         this.rawres = new InferenceRawResult(inputSize);
         this.inputSize = inputSize;
         this.conf_thresh = conf_thresh;
         this.iou_thresh = iou_thresh;
-        loadModel(context, runmode, inputSize, 4);
+        this.version =ModelVersion;
+        loadModel(context, version,runmode, inputSize, 4);
     }
     private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
             throws IOException {
@@ -66,7 +67,7 @@ public class TfliteRunner {
         long declaredLength = fileDescriptor.getDeclaredLength();
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
-    public void loadModel(Context context, Mode runmode, int inputSize, int num_threads) throws Exception{
+    public void loadModel(Context context, int version, Mode runmode, int inputSize, int num_threads) throws Exception{
         Interpreter.Options options = new Interpreter.Options();
         NnApiDelegate.Options nnapi_options = new NnApiDelegate.Options();
         options.setNumThreads(num_threads);
@@ -101,7 +102,8 @@ public class TfliteRunner {
         }
         boolean quantized_mode = TfliteRunMode.isQuantizedMode(runmode);
         String precision_str = quantized_mode ? "int8" : "fp32";
-        String modelname = "yolov5s_" + precision_str + "_" + String.valueOf(inputSize) + ".tflite";
+        String modelversion = (version==0)? "yolov5s_":"yolov5m_";
+        String modelname = modelversion + precision_str + "_" + String.valueOf(inputSize) + ".tflite";
         MappedByteBuffer tflite_model_buf = TfliteRunner.loadModelFile(context.getAssets(), modelname);
         this.tfliteInterpreter = new Interpreter(tflite_model_buf, options);
     }
