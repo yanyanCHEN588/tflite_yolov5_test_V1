@@ -202,7 +202,7 @@ public class DetectorActivity extends CameraActivity implements ImageReader.OnIm
         int TF_OD_API_INPUT_SIZE_get=intent.getIntExtra("inputSize", 320);
         TfliteRunMode.Mode MODE_get = (TfliteRunMode.Mode)intent.getSerializableExtra("runmode");
         modelVsionRadio=intent.getIntExtra("modelVersion", 0);
-        String modelVersion = (modelVsionRadio==0) ? "s" : "m";
+        String modelVersion = (modelVsionRadio==0) ? "S" : "M";
         //assing value
         TF_OD_API_INPUT_SIZE = TF_OD_API_INPUT_SIZE_get;
         MODE=MODE_get;
