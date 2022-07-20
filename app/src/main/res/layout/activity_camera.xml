@@ -25,28 +25,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="int8 320x320" />
+            android:text="int8 320x320"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textViewFPS"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="FPS:" />
+            android:text="FPS:"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textViewLatency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="Inference: xxms Postprocess: yyms" />
+            android:text="Inference: xxms Postprocess: yyms"
+            android:textColor="#000000"/>
 
         <TextView
             android:id="@+id/conf_TextView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="Confidence Threshold" />
+            android:text="Confidence Threshold"
+            android:textColor="#000000"/>
 
         <SeekBar
             android:id="@+id/conf_seekBar2"
@@ -58,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:text="IoU Threshold" />
+            android:text="IoU Threshold"
+            android:textColor="#000000"/>
 
         <SeekBar
             android:id="@+id/iou_seekBar2"
@@ -75,22 +80,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="OnClickDirection"
-                android:text="Directions"
-                android:textSize="8sp" />
+                android:text="@string/txt_nowdirection"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tv_magneticSTA"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/txt_magnetic" />
+                android:text="@string/txt_magnetic"
+                android:textColor="#000000"/>
 
             <TextView
                 android:id="@+id/tv_item"
                 android:layout_width="96dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="none" />
+                android:text="none"
+                android:textColor="#000000" />
 
         </LinearLayout>
 
